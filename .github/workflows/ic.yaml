@@ -72,8 +72,8 @@ jobs:
         env:
           JSON_DATA: ${{ steps.parse.outputs.data }}
         run: |
-          accepted=$(echo(echo JSON_DATA | jq -r '.["terms-of-services"].list[0].checked')
-          echo "accepted=accepted">>accepted" >> GITHUB_OUTPUT
+          accepted=$(echo $JSON_DATA | jq -r '.["terms-of-services"].list[0].checked')
+          echo "accepted=$accepted" >> $GITHUB_OUTPUT
 
       - name: Validate
         if: steps.set-output.outputs.accepted == 'null'
@@ -82,9 +82,9 @@ jobs:
         run: |
           # Check if $GITHUB_STEP_SUMMARY exist to avoid the following lines to error when running with act
           if [[ -w "$GITHUB_STEP_SUMMARY" ]]; then
-            echo "No checkbox for the tos found in the body of the issue inputs.issuenumber">>{{ inputs.issue_number }}" >> GITHUB_STEP_SUMMARY
+            echo "No checkbox for the plugin found in the body of the issue ${{ inputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
             echo "Is the \"terms-of-services\" field present?" >> $GITHUB_STEP_SUMMARY
-            echo PARSEDDATA>>PARSED_DATA >> GITHUB_STEP_SUMMARY
+            echo $PARSED_DATA >> $GITHUB_STEP_SUMMARY
           fi
           exit 1
 
