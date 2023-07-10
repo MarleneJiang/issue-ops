@@ -12,8 +12,8 @@ on:
       - edited
 
 env:
-  GH_TOKEN: ${{ github.token }}
-  GH_REPO: ${{ github.repository }}
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  GH_REPO: ${{ secrets.GH_REPO }}
 
 jobs:
   react-to-new-issue:
