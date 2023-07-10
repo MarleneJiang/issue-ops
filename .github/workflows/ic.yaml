@@ -43,9 +43,9 @@ jobs:
         env:
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          command=(echo "(echo "COMMENT_BODY" | head -1)
+          command=$(echo "$COMMENT_BODY" | head -1)
           if [[ $command != "/validate"* ]]; then
-            echo "No /validate command found in first line of the comment \"{command}\", skipping" >> {command}\", skipping" >> GITHUB_STEP_SUMMARY
+            echo "No /validate command found in first line of the comment \"${command}\", skipping" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
       - name: Add reactions
