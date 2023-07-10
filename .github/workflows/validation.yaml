@@ -22,7 +22,7 @@ jobs:
         env:
           JSON_DATA: ${{ steps.parse.outputs.data }}
         run: |
-          repository=$(echo $JSON_DATA | jq -r '.["alicebot-plugin-repository-name"].text' )
+          repository=$(echo $JSON_DATA | jq -r '.["alice-bot-plugin-repository-name"].text' )
           echo "repository=$repository" >> $GITHUB_OUTPUT
 
       - name: Ensure repository is filled
@@ -33,7 +33,7 @@ jobs:
           # Check if $GITHUB_STEP_SUMMARY exist to avoid the following lines to error when running with act
           if [[ -w "$GITHUB_STEP_SUMMARY" ]]; then
             echo "No repository found in the body of the issue ${{ inputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
-            echo "Is the \"alicebot-plugin-repository-name\" field present?" >> $GITHUB_STEP_SUMMARY
+            echo "Is the \"alice-bot-plugin-repository-name\" field present?" >> $GITHUB_STEP_SUMMARY
             echo $PARSED_DATA >> $GITHUB_STEP_SUMMARY
           fi
           exit 1
