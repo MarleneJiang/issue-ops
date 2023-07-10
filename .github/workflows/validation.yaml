@@ -37,6 +37,10 @@ jobs:
             echo $PARSED_DATA >> $GITHUB_STEP_SUMMARY
           fi
           exit 1
+      
+      - name: Add label validation/failed
+        if: env.ACT == false && !contains(github.event.issue.labels.*.name, 'validation/failed')
+        run: gh issue edit ${{ github.event.issue.number }} --add-label "validation/failed"
 
       # - uses: actions/checkout@v3
       # - uses: actions/setup-node@v3
