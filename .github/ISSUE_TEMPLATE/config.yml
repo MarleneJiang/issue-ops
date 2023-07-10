@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report Issue
+    url: https://docs.alicebot.dev/
+    about: Report the issue.
+  - name: Share an extension idea
+    url: https://docs.alicebot.dev/
+    about: Have an idea for an extension? Share it with us!
+  - name: Need Help
+    url: https://docs.alicebot.dev/
+    about: Read the document to find more functions.

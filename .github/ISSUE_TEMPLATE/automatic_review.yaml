@@ -1,0 +1,35 @@
+name: Submit to plugin marketplace
+description: Submit your plugin to be automatically validated and published on the marketplace.
+title: '[Submission]: '
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for creating an plugin and submitting it to our marketplace!
+  - type: input
+    attributes:
+      label: AliceBot plugin repository name
+      description: Provide the plugin repository name for your plugin.
+      placeholder: idealeap/bumpBot
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        :warning: We automatically validate the plugin meta data.
+  - type: checkboxes
+    attributes:
+      label: Terms of services
+      options:
+        - label: I accept the [term of services](xxx)
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        Once you have filled the form and submitted this issue, we will run automated validation on the plugin.
+
+        :+1: If everything goes well, a new label `validation/succeeded` will be added and the alicebot docs will authorise the publication of the plugin to the marketplace.
+
+        :confused: If there are issues, you will see details in comments on the issue and information about how to fix them and re-run validation.
