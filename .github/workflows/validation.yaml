@@ -51,7 +51,7 @@ jobs:
         id: validate
         env:
           REPOSITORY: ${{ steps.set-output.outputs.repository }}
-        run: node .github/actions-scripts/sanitize-repository.js
+        run: node .github/actions-scripts/validate.js
 
   validation-succeeded:
     runs-on: ubuntu-latest
