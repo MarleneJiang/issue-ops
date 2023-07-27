@@ -37,10 +37,113 @@ jobs:
             echo $PARSED_DATA >> $GITHUB_STEP_SUMMARY
           fi
           exit 1
-      
+
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate repository
+        id: validate
+        env:
+          REPOSITORY: ${{ steps.set-output.outputs.repository }}
+        run: node .github/actions-scripts/sanitize-repository.js
+
+  validation-succeeded:
+    runs-on: ubuntu-latest
+    needs: parse-issue
+    if: always() && (needs.parse-issue.result == 'success')
+    steps:
+      - uses: actions/checkout@v3.3.0
+
+      - name: Render template
+        id: render
+        uses: chuhlomin/render-template@v1.6
+        with:
+          template: .github/workflows/templates/validation-succeeded.md
+          vars: |
+            extension: ${{ needs.parse-issue.outputs.repository }}
+            share_link: ${{ needs.validate.outputs.share_link }}
+
+      - name: Add Comment
+        if: env.ACT == false
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: ${{ steps.render.outputs.result }}
+
+      - name: Remove label validation/failed
+        if: env.ACT == false && contains(github.event.issue.labels.*.name, 'validation/failed')
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // this gets the number at the end of the content URL, which should be the issue/PR number
+            const issue_num = context.payload.project_card.content_url.split('/').pop()
+            github.rest.issues.removeLabel({
+              issue_number: issue_num,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: ["validation/failed"]
+            })
+
+      - name: Add label validation/succeeded
+        if: env.ACT == false && !contains(github.event.issue.labels.*.name, 'validation/succeeded')
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["validation/succeeded"]
+            })
+
+  validation-failed:
+    runs-on: ubuntu-latest
+    needs: parse-issue
+    if: |
+      always() &&
+      (needs.parse-issue.result == 'failure' && needs.parse-issue.outputs.validation_output != '')
+    steps:
+      - uses: actions/checkout@v3.3.0
+
+      - name: Render template
+        id: render
+        uses: chuhlomin/render-template@v1.6
+        with:
+          template: .github/workflows/templates/validation-failed.md
+          vars: |
+            extension: ${{ needs.parse-issue.outputs.repository }}
+            validation_output: ${{ toJSON(format('{0}{1}', needs.parse-issue.outputs.validation_output,needs.parse-issue.outputs.validation_output)) }}
+
+      - name: Add comment
+        if: env.ACT == false
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: ${{ steps.render.outputs.result }}
+
+
+      - name: Remove label validation/succeeded
+        if: env.ACT == false && contains(github.event.issue.labels.*.name, 'validation/succeeded')
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // this gets the number at the end of the content URL, which should be the issue/PR number
+            const issue_num = context.payload.project_card.content_url.split('/').pop()
+            github.rest.issues.removeLabel({
+              issue_number: issue_num,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: ["validation/succeeded"]
+            })
+
       - name: Add label validation/failed
         if: env.ACT == false && !contains(github.event.issue.labels.*.name, 'validation/failed')
-        # run: gh issue edit ${{ github.event.issue.number }} --add-label "validation/failed"
         uses: actions/github-script@v6
         with:
           script: |
@@ -51,300 +154,5 @@ jobs:
               labels: ["validation/failed"]
             })
 
-      # - uses: actions/checkout@v3
-      # - uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 18
-      #     cache: npm
-
-      # - name: Install dependencies
-      #   run: npm ci
-
-      # - name: Validate repository
-      #   id: validate
-      #   env:
-      #     REPOSITORY: ${{ steps.set-output.outputs.repository }}
-      #   run: node .github/actions-scripts/sanitize-repository.js
-
-  # error:
-  #   runs-on: ubuntu-latest
-  #   needs: parse-issue
-  #   if: failure()
-  #   steps:
-  #     - uses: actions/checkout@v3.3.0
-
-  #     - name: Render template
-  #       id: render
-  #       uses: chuhlomin/render-template@v1.6
-  #       with:
-  #         template: .github/workflows/templates/validation-repository-not-found.md
-  #         vars: |
-  #           workflow_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-  #     - name: Add comment
-  #       if: env.ACT == false # do not comment when running with act
-  #       uses: peter-evans/create-or-update-comment@v2
-  #       with:
-  #         issue-number: ${{ github.event.issue.number }}
-  #         body: ${{ steps.render.outputs.result }}
-
-  #     - name: Mark job as failed
-  #       run: exit 1
-
-  # noop-validate:
-  #   if: github.event.act == true
-  #   runs-on: ubuntu-latest
-  #   needs: parse-issue
-  #   outputs:
-  #     validation_output: ${{ steps.set-output.outputs.validation_output || '' }}
-  #   steps:
-  #     - uses: actions/checkout@v3.3.0
-  #     - id: set-output
-  #       run: |
-  #         delimiter="$(openssl rand -hex 8)"
-
-  #         if [[ ${TEST_VALIDATION_FAILED} ]]; then
-  #           echo "validation_output<<${delimiter}" >> $GITHUB_OUTPUT
-  #           echo "$(cat test/validation_outputs/failed.txt)" >> $GITHUB_OUTPUT
-  #           echo "${delimiter}" >> $GITHUB_OUTPUT
-
-  #           exit 1
-  #         fi
-
-  #         if [[ ${TEST_VALIDATION_ERRORED} ]]; then
-  #           # Do not set the validation_output variable on failure
-  #           exit 1
-  #         fi
-
-
-  # validate:
-  #   if: github.event.act == false
-  #   runs-on: macOS-latest
-  #   needs: parse-issue
-  #   outputs:
-  #     validation_output: ${{ steps.set-output.outputs.validation_output }}
-  #     share_link: ${{ steps.share-link.outputs.share-link }}
-  #   steps:
-  #     - name: Redirect api.segment.io to localhost
-  #       id: redirect-segment
-  #       run: |
-  #         echo '127.0.0.2 api.segment.io' | sudo tee -a /etc/hosts
-  #         cat /etc/hosts
-
-  #     - name: Download appcast
-  #       run: |
-  #         curl https://prod-docker-desktop.s3.amazonaws.com/mac/main/amd64/appcast.xml -o appcast.xml
-
-  #     - name: Get Docker Desktop latest build url
-  #       uses: mavrosxristoforos/get-xml-info@1.1.1
-  #       id: get-build-url
-  #       with:
-  #         xml-file: appcast.xml
-  #         xpath: //channel/link
-
-  #     - name: Get Docker Desktop latest build number
-  #       id: get-build-number
-  #       run: |
-  #         build=$(echo ${{ steps.get-build-url.outputs.info }} | sed -E 's/.*\/([0-9]+)\/.*/\1/')
-  #         echo "build=$build" >> $GITHUB_OUTPUT
-
-  #     - name: Get Docker app cache
-  #       id: cache-docker-desktop-app
-  #       uses: actions/cache@v3
-  #       env:
-  #         cache-name: cache-docker-desktop-app
-  #       with:
-  #         path: /Applications/Docker.app
-  #         key: docker-desktop-app-mac-amd64-${{ steps.get-build-number.outputs.build }}
-
-  #     - name: Get Docker install settings cache
-  #       id: cache-docker-desktop-install-settings
-  #       uses: actions/cache@v3
-  #       env:
-  #         cache-name: cache-docker-desktop-install-settings
-  #       with:
-  #         path: ./cache/desktopInstallSettings/
-  #         key: docker-desktop-install-settings-mac-${{ steps.get-build-number.outputs.build }}
-
-  #     - name: Copy Desktop install settings in /Library
-  #       if: steps.cache-docker-desktop-install-settings.outputs.cache-hit == 'true'
-  #       run: |
-  #         echo "ls ./cache/desktopInstallSettings/"
-  #         ls ./cache/desktopInstallSettings/
-  #         sudo mkdir -p "/Library/Application Support/com.docker.docker"
-  #         sudo cp ./cache/desktopInstallSettings/* "/Library/Application Support/com.docker.docker/"
-  #         echo "/Library/Application Support/com.docker.docker/"
-  #         ls "/Library/Application Support/com.docker.docker/"
-
-  #     - name: Fetch and install Docker Desktop dmg
-  #       if: steps.cache-docker-desktop-install-settings.outputs.cache-hit != 'true'
-  #       run: |
-  #         sw_vers
-  #         mkdir ./temp
-  #         mkdir ./mount
-  #         wget -q -O ./temp/DockerDesktop.dmg ${{ steps.get-build-url.outputs.info }}
-  #         /usr/bin/hdiutil attach -noverify ./temp/DockerDesktop.dmg -mountpoint ./mount/desktop -nobrowse
-  #         echo "dmg mounted"
-  #         sudo ./mount/desktop/Docker.app/Contents/MacOS/install --accept-license
-  #         echo "dmg installed"
-  #         echo "ls /Library/Application Support/com.docker.docker"
-  #         ls "/Library/Application Support/com.docker.docker" || true
-  #         mkdir -p ./cache/desktopInstallSettings
-  #         cp "/Library/Application Support/com.docker.docker/"* ./cache/desktopInstallSettings/
-  #         echo "ls ./cache/desktopInstallSettings/"
-  #         ls ./cache/desktopInstallSettings/ || true
-  #         /usr/bin/hdiutil detach ./mount/desktop
-  #         echo "dmg unmounted"
-
-  #     - name: Start Docker Desktop
-  #       timeout-minutes: 5
-  #       run: |
-  #         sudo mkdir /Library/PrivilegedHelperTools
-  #         sudo /Applications/Docker.app/Contents/MacOS/install config --user runner
-  #         sudo /Applications/Docker.app/Contents/MacOS/install vmnetd
-  #         echo "app installed"
-  #         /usr/bin/open /Applications/Docker.app --args --unattended --add-host-docker-internal-registry
-  #         echo "Docker starting..."
-
-  #     - name: Wait for Docker to be up and running
-  #       timeout-minutes: 10
-  #       run: |
-  #         until docker ps; do echo "ps failed, sleep 10 s and try again"; sleep 10; done
-  #         echo "Docker started and ready"
-
-  #     - name: Validate extension
-  #       id: validate
-  #       continue-on-error: true
-  #       env:
-  #         REPOSITORY: ${{ needs.parse-issue.outputs.repository }}
-  #       run: |
-  #         touch output.txt
-  #         docker extension validate --auto-resolve-tag --errors-only --sdk-compatibility --validate-install-uninstall $REPOSITORY &> output.txt
-
-  #     - name: Read validation output
-  #       id: set-output
-  #       run: |
-  #         delimiter="$(openssl rand -hex 8)"
-  #         echo "validation_output<<${delimiter}" >> $GITHUB_OUTPUT
-  #         echo "$(cat output.txt)" >> $GITHUB_OUTPUT
-  #         echo "${delimiter}" >> $GITHUB_OUTPUT
-
-  #     - name: Mark job as failed
-  #       if: steps.validate.outcome != 'success'
-  #       run: exit 1
-
-  #     - name: Generate share link
-  #       id: share-link
-  #       env:
-  #         REPOSITORY: ${{ needs.parse-issue.outputs.repository }}
-  #       run: |
-  #         echo "share-link=$(docker extension share $REPOSITORY)" >> $GITHUB_OUTPUT
-
-  # validation-succeeded:
-  #   runs-on: ubuntu-latest
-  #   needs: [parse-issue, noop-validate, validate]
-  #   if: always() && (needs.validate.result == 'success' || needs.noop-validate.result == 'success')
-  #   steps:
-  #     - uses: actions/checkout@v3.3.0
-
-  #     - name: Render template
-  #       id: render
-  #       uses: chuhlomin/render-template@v1.6
-  #       with:
-  #         template: .github/workflows/templates/validation-succeeded.md
-  #         vars: |
-  #           extension: ${{ needs.parse-issue.outputs.repository }}
-  #           share_link: ${{ needs.validate.outputs.share_link }}
-
-  #     - name: Add Comment
-  #       if: env.ACT == false
-  #       uses: peter-evans/create-or-update-comment@v2
-  #       with:
-  #         issue-number: ${{ github.event.issue.number }}
-  #         body: ${{ steps.render.outputs.result }}
-
-  #     - name: Remove label docker/validation-errored
-  #       if: env.ACT == false && contains(github.event.issue.labels.*.name, 'docker/validation-errored')
-  #       run: gh issue edit ${{ github.event.issue.number }} --remove-label "docker/validation-errored"
-
-  #     - name: Remove label validation/failed
-  #       if: env.ACT == false && contains(github.event.issue.labels.*.name, 'validation/failed')
-  #       run: gh issue edit ${{ github.event.issue.number }} --remove-label "validation/failed"
-
-  #     - name: Add label validation/succeeded
-  #       if: env.ACT == false && !contains(github.event.issue.labels.*.name, 'validation/succeeded')
-  #       run: gh issue edit ${{ github.event.issue.number }} --add-label "validation/succeeded"
-
-  # validation-failed:
-  #   runs-on: ubuntu-latest
-  #   needs: [parse-issue, noop-validate, validate]
-  #   if: |
-  #     always() &&
-  #     (needs.validate.result == 'failure' && needs.validate.outputs.validation_output != '') ||
-  #     (needs.noop-validate.result == 'failure' && needs.noop-validate.outputs.validation_output != '')
-  #   steps:
-  #     - uses: actions/checkout@v3.3.0
-
-  #     - name: Render template
-  #       id: render
-  #       uses: chuhlomin/render-template@v1.6
-  #       with:
-  #         template: .github/workflows/templates/validation-failed.md
-  #         vars: |
-  #           extension: ${{ needs.parse-issue.outputs.repository }}
-  #           validation_output: ${{ toJSON(format('{0}{1}', needs.validate.outputs.validation_output, needs.noop-validate.outputs.validation_output)) }}
-
-  #     - name: Add comment
-  #       if: env.ACT == false
-  #       uses: peter-evans/create-or-update-comment@v2
-  #       with:
-  #         issue-number: ${{ github.event.issue.number }}
-  #         body: ${{ steps.render.outputs.result }}
-
-  #     - name: Remove label docker/validation-errored
-  #       if: env.ACT == false && contains(github.event.issue.labels.*.name, 'docker/validation-errored')
-  #       run: gh issue edit ${{ github.event.issue.number }} --remove-label "docker/validation-errored"
-
-  #     - name: Remove label validation/succeeded
-  #       if: env.ACT == false && contains(github.event.issue.labels.*.name, 'validation/succeeded')
-  #       run: gh issue edit ${{ github.event.issue.number }} --remove-label "validation/succeeded"
-
-  #     - name: Add label validation/failed
-  #       if: env.ACT == false && !contains(github.event.issue.labels.*.name, 'validation/failed')
-  #       run: gh issue edit ${{ github.event.issue.number }} --add-label "validation/failed"
-
-  #     - name: Mark job as failed
-  #       run: exit 1
-
-  # validation-errored:
-  #   runs-on: ubuntu-latest
-  #   needs: [noop-validate, validate]
-  #   if: |
-  #     always() &&
-  #     (needs.validate.result == 'failure' && needs.validate.outputs.validation_output == '') ||
-  #     (needs.noop-validate.result == 'failure' && needs.noop-validate.outputs.validation_output == '')
-  #   steps:
-  #     - uses: actions/checkout@v3.3.0
-
-  #     - name: Render template
-  #       id: render
-  #       uses: chuhlomin/render-template@v1.6
-  #       with:
-  #         template: .github/workflows/templates/validation-errored.md
-  #         vars: |
-  #           workflow_url: github.serverurl/{{ github.server_url }}/{{ github.repository }}/actions/runs/${{ github.run_id }}
-
-  #     - name: Add comment
-  #       if: env.ACT == false
-  #       uses: peter-evans/create-or-update-comment@v2
-  #       with:
-  #         issue-number: ${{ github.event.issue.number }}
-  #         body: ${{ steps.render.outputs.result }}
-
-  #     - name: Add 'docker/validation-errored' label
-  #       if: env.ACT == false && contains(github.event.issue.labels.*.name, 'docker/validation-errored')
-  #       run: gh issue edit ${{ github.event.issue.number }} --add-label "docker/validation-errored"
-
-
-  #     - name: Mark job as failed
-  #       run: exit 1
+      - name: Mark job as failed
+        run: exit 1
