@@ -107,7 +107,7 @@ jobs:
       - name: update JSON file
         id: validate
         env:
-          VALUES: ${{CONTENT}}
+          VALUES: ${CONTENT}
           FILE: "plugins.json"
         run: node .github/actions-scripts/file.js
 
