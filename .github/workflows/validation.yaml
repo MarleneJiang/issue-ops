@@ -104,26 +104,12 @@ jobs:
       #         --json  number | jq '. | length'\
       #     )
       #     echo "::set-output name=merged_linked_pr_length::$merged_linked_pr_length"
-      - name: Read JSON file
-        id: read-json
-        run: |
-          echo "file_json=$(cat plugins.json)" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Append to JSON array
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const contents = JSON.parse('${{ steps.read-json.outputs.file_json }}')
-            contents.data.push(${CONTENT})
-            github.repos.createOrUpdateFileContents({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              path: 'plugins.json',
-              message: 'Add new object to JSON array',
-              content: Buffer.from(JSON.stringify(contents)).toString('base64'),
-              sha: '${{ github.event.after }}'
-            })
+      - name: update JSON file
+        id: validate
+        env:
+          VALUES: ${{CONTENT}}
+          FILE: "plugins.json"
+        run: node .github/actions-scripts/file.js
 
       # - name: Create files
       #   # if: steps.get_merged_linked_pr.outputs.merged_linked_pr_length == 0
