@@ -67,6 +67,7 @@ jobs:
       REPO: ${{ github.repository }}
       ISSUE_NUM: ${{ github.event.issue.number }}
       ISSUE_TITLE: ${{ github.event.issue.title }}
+      CONTENT: ${{needs.parse-issue.outputs.validation_output}}
     outputs:
       result: ${{ steps.validate.outputs.result }}
     steps:
@@ -108,7 +109,7 @@ jobs:
           mkdir $ISSUE_NUM
           echo -e "こんにちは、CX事業本部 IoT事業部の若槻です。\n\n今回は、${ISSUE_TITLE}\n\n## おわりに\n\n\n\n## 参考\n\n\n\n以上" \
             >> $ISSUE_NUM/article.md
-          echo -e "${needs.parse-issue.outputs.validation_output}" \
+          echo -e "{\n  \"postName\": \"${CONTENT}\",\n  \"title\": \"${ISSUE_TITLE}\",\n  \"description\": \"\"\n}" \
             >> $ISSUE_NUM/config.json
 
       - name: Reopen issue
