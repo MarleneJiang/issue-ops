@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       repository: ${{ steps.validate.outputs.repository }}
+      validation_output: ${{ steps.validate.outputs.validation_output }}
     steps:
       - name: Parse issue body
         id: parse
@@ -56,7 +57,7 @@ jobs:
   validation-succeeded:
     runs-on: ubuntu-latest
     needs: parse-issue
-    # if: needs.parse-issue.outputs.validation_output.result == 'success'
+    if: needs.parse-issue.outputs.validation_output.result == 'success'
     steps:
       - uses: actions/checkout@v3.3.0
 
@@ -67,7 +68,7 @@ jobs:
           template: .github/workflows/templates/validation-succeeded.md
           vars: |
             extension: ${{ needs.parse-issue.outputs.validation_output }}
-            content: ${{ needs.parse-issue.outputs.result }}
+            content: ${{ needs.parse-issue.outputs.repository }}
 
       - name: Add Comment
         if: env.ACT == false
