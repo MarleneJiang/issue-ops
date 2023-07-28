@@ -67,7 +67,7 @@ jobs:
           template: .github/workflows/templates/validation-succeeded.md
           vars: |
             extension: ${{ needs.parse-issue.outputs.repository }}
-            share_link: ${{ needs.validate.outputs.share_link }}
+            content: ${{ needs.parse-issue.outputs.validation_output }}
 
       - name: Add Comment
         if: env.ACT == false

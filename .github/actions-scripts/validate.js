@@ -9,10 +9,21 @@ async function run() {
             const response = await fetch(new URL(repository.replace(/[<>]/g, '')));
             const data = await response.text();
             const parsed = toml.parse(data);
-            console.log(parsed);
+            const content = {
+                "name": parsed.project.name,
+                "description": parsed.project.description,
+                "version": parsed.project.version,
+                "tags": parsed.project.keywords,
+                "url": parsed.project.urls.Repository,
+                "author": parsed.project.authors[0].name,
+                "pip": parsed.project.name,
+                "vertified": false,
+                "type": "plugin"
+            }
+            console.log(content);
             setOutput('repository', repository);
             setOutput('result','success');
-            setOutput('validation_output',parsed);
+            setOutput('validation_output',content);
         } catch (e) {
             setFailed(e);
             return;
@@ -22,9 +33,8 @@ async function run() {
         setOutput('result','failure');
         setOutput('validation_output',{'a':'b'});
     }
-
-
-    setOutput('repository', repository);
+    return;
 }
 
 await run();
+
