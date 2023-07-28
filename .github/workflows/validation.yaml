@@ -71,7 +71,7 @@ jobs:
 
       - name: Add Comment
         if: env.ACT == false
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3.0.2
         with:
           issue-number: ${{ github.event.issue.number }}
           body: ${{ steps.render.outputs.result }}
@@ -120,7 +120,7 @@ jobs:
 
       - name: Add comment
         if: env.ACT == false
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3.0.2
         with:
           issue-number: ${{ github.event.issue.number }}
           body: ${{ steps.render.outputs.result }}
