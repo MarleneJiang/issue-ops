@@ -81,10 +81,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            // this gets the number at the end of the content URL, which should be the issue/PR number
-            const issue_num = context.payload.project_card.content_url.split('/').pop()
             github.rest.issues.removeLabel({
-              issue_number: issue_num,
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: ["validation/failed"]
@@ -133,10 +131,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            // this gets the number at the end of the content URL, which should be the issue/PR number
-            const issue_num = context.payload.project_card.content_url.split('/').pop()
             github.rest.issues.removeLabel({
-              issue_number: issue_num,
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: ["validation/succeeded"]

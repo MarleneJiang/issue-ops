@@ -8,8 +8,8 @@
   "author": "Marlene",
   "license": "MIT",
   "type": "module",
-  
   "dependencies": {
-    "@actions/core": "^1.10.0"
+    "@actions/core": "^1.10.0",
+    "toml": "^3.0.0"
   }
 }
