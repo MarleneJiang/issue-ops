@@ -103,11 +103,32 @@ jobs:
       #         --json  number | jq '. | length'\
       #     )
       #     echo "::set-output name=merged_linked_pr_length::$merged_linked_pr_length"
-      - name: Create files
-        # if: steps.get_merged_linked_pr.outputs.merged_linked_pr_length == 0
+      - name: Read JSON file
+        id: read-json
         run: |
-          echo -e "${CONTENT}" \
-            >> config.json
+          echo "::set-output name=contents::$(cat plugins.json)"
+        shell: bash
+
+      - name: Append to JSON array
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const contents = JSON.parse('${{ steps.read-json.outputs.contents }}')
+            contents.data.push(${CONTENT})
+            github.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: 'plugins.json',
+              message: 'Add new object to JSON array',
+              content: Buffer.from(JSON.stringify(contents)).toString('base64'),
+              sha: '${{ github.event.after }}'
+            })
+
+      # - name: Create files
+      #   # if: steps.get_merged_linked_pr.outputs.merged_linked_pr_length == 0
+      #   run: |
+      #     echo -e "${CONTENT}" \
+      #       >> config.json
 
       - name: Reopen issue
         if: ${{ github.event.issue.state }} == "closed"
@@ -139,7 +160,7 @@ jobs:
         run: |
           echo "git fetch origin ${NEW_BRANCH}"
           echo "git checkout ${NEW_BRANCH}"
-          echo "code --reuse-window config.json"
+          echo "code --reuse-window plugins.json"
           result="success"
           echo "result=$result" >> $GITHUB_OUTPUT
         env:
