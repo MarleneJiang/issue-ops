@@ -4,6 +4,7 @@ import { getRepoFromHubURL } from './utils/hub.js';
 function run() {
     let { REPOSITORY: repository } = process.env
     if (!repository) throw new Error('REPOSITORY env var is not set')
+    console.log(repository)
     setFailed("test~~~~~")
     if (repository.includes('http')) {
         try {
