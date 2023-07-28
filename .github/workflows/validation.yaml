@@ -66,8 +66,8 @@ jobs:
         with:
           template: .github/workflows/templates/validation-succeeded.md
           vars: |
-            extension: ${{ needs.parse-issue.outputs }}
-            content: ${{ needs.parse-issue.outputs.validation_output.content }}
+            extension: ${{ needs.parse-issue.outputs.validation_output }}
+            content: ${{ needs.parse-issue.outputs.result }}
 
       - name: Add Comment
         if: env.ACT == false
