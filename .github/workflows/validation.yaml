@@ -92,19 +92,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Get merged linked PR
-        id: get_merged_linked_pr
-        run: |
-          merged_linked_pr_length=$(\
-            gh pr list \
-              --repo $REPO \
-              --state merged \
-              --search "close #$ISSUE_NUM in:body" \
-              --json  number | jq '. | length'\
-          )
-          echo "::set-output name=merged_linked_pr_length::$merged_linked_pr_length"
+      # - name: Get merged linked PR
+      #   id: get_merged_linked_pr
+      #   run: |
+      #     merged_linked_pr_length=$(\
+      #       gh pr list \
+      #         --repo $REPO \
+      #         --state merged \
+      #         --search "close #$ISSUE_NUM in:body" \
+      #         --json  number | jq '. | length'\
+      #     )
+      #     echo "::set-output name=merged_linked_pr_length::$merged_linked_pr_length"
       - name: Create files
-        if: steps.get_merged_linked_pr.outputs.merged_linked_pr_length == 0
+        # if: steps.get_merged_linked_pr.outputs.merged_linked_pr_length == 0
         run: |
           echo -e "${CONTENT}" \
             >> config.json
