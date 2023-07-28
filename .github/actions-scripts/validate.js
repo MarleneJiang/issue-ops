@@ -29,6 +29,7 @@ async function run() {
             return;
         }
     }else{
+        
         setOutput('result','failure')
         setOutput('validation_output','Not a valid repository')
         setOutput('repository',new URL(repository.replace(/[<>]/g, '')))
