@@ -1,5 +1,4 @@
 import {setFailed, setOutput} from '@actions/core';
-import { getRepoFromHubURL } from './utils/hub.js';
 
 function run() {
     let { REPOSITORY: repository } = process.env
@@ -10,7 +9,6 @@ function run() {
         try {
             // When parsed the url will be like <https://hub.docker.com>
             const url = new URL(repository.replace(/[<>]/g, ''));
-            repository = getRepoFromHubURL(url);
         } catch (e) {
             setFailed(e);
 
