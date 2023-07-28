@@ -69,7 +69,8 @@ jobs:
       ISSUE_TITLE: ${{ github.event.issue.title }}
       CONTENT: ${{needs.parse-issue.outputs.validation_output}}
     outputs:
-      result: ${{ steps.validate.outputs.result }}
+      result: ${{ steps.copy-commands.outputs.result }}
+      file_json: ${{ steps.read-json.outputs.file_json }}
     steps:
       - name: Get open linked PR
         id: get_open_linked_pr
@@ -106,14 +107,14 @@ jobs:
       - name: Read JSON file
         id: read-json
         run: |
-          echo "::set-output name=contents::$(cat plugins.json)"
+          echo "file_json=$(cat plugins.json)" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Append to JSON array
         uses: actions/github-script@v4
         with:
           script: |
-            const contents = JSON.parse('${{ steps.read-json.outputs.contents }}')
+            const contents = JSON.parse('${{ steps.read-json.outputs.file_json }}')
             contents.data.push(${CONTENT})
             github.repos.createOrUpdateFileContents({
               owner: context.repo.owner,
@@ -157,6 +158,7 @@ jobs:
           BASE_BRANCH_NAME: ${{ github.event.repository.default_branch }}
 
       - name: Copy Commands
+        id: copy-commands
         run: |
           echo "git fetch origin ${NEW_BRANCH}"
           echo "git checkout ${NEW_BRANCH}"
