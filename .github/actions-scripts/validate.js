@@ -6,7 +6,7 @@ async function run() {
     if (repository.includes('https://raw.githubusercontent.com/')) {
         try {
             console.log(repository);
-            const response = await fetch(repository);
+            const response = await fetch(new URL(repository.replace(/[<>]/g, '')));
             const data = await response.text();
             const parsed = toml.parse(data);
             setOutput('repository', repository);
