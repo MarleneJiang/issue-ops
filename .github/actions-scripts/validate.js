@@ -9,6 +9,7 @@ async function run() {
             const response = await fetch(new URL(repository.replace(/[<>]/g, '')));
             const data = await response.text();
             const parsed = toml.parse(data);
+            console.log(parsed);
             setOutput('repository', repository);
             setOutput('result','success');
             setOutput('validation_output',parsed);
