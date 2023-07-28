@@ -1,29 +1,29 @@
-import {setFailed, setOutput} from '@actions/core';
-function getRepoFromHubURL(url) {
-  if (url.host !== "github.com") {
-      throw "URL must be from github.com domain";
-  }
-
-  return url;
-}
-function run() {
+import { setFailed, setOutput } from '@actions/core';
+import * as toml from 'toml';
+async function run() {
     let { REPOSITORY: repository } = process.env
     if (!repository) throw new Error('REPOSITORY env var is not set')
-    // repository 是否含有https://github.com/字段
-    if (repository.includes('https://github.com/')) {
-      try {
-          // When parsed the url will be like <https://hub.docker.com>
-          const url = new URL(repository.replace(/[<>]/g, ''));
-          repository = getRepoFromHubURL(url);
-          console.log(repository);
-      } catch (e) {
-          setFailed(e);
-          return;
-      }
-  }
+    if (repository.includes('https://raw.githubusercontent.com/')) {
+        try {
+            console.log(repository);
+            const response = await fetch(repository);
+            const data = await response.text();
+            const parsed = toml.parse(data);
+            setOutput('repository', repository);
+            setOutput('result','success');
+            setOutput('validation_output',parsed);
+        } catch (e) {
+            setFailed(e);
+            return;
+        }
+    }else{
+        setOutput('repository', repository);
+        setOutput('result','failure');
+        setOutput('validation_output',{'a':'b'});
+    }
 
 
     setOutput('repository', repository);
 }
 
-run();
+await run();
