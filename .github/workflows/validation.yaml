@@ -10,6 +10,10 @@ env:
 jobs:
   parse-issue:
     runs-on: ubuntu-latest
+    env:
+      REPO: ${{ github.repository }}
+      ISSUE_NUM: ${{ github.event.issue.number }}
+      ISSUE_TITLE: ${{ github.event.issue.title }}
     outputs:
       repository: ${{ steps.validate.outputs.repository }}
       validation_output: ${{ steps.validate.outputs.validation_output }}
@@ -55,10 +59,97 @@ jobs:
           REPOSITORY: ${{ steps.set-output.outputs.repository }}
         run: node .github/actions-scripts/validate.js
 
-  validation-succeeded:
+  create-pr:
     runs-on: ubuntu-latest
     needs: parse-issue
     if: needs.parse-issue.outputs.result == 'success'
+    env:
+      REPO: ${{ github.repository }}
+      ISSUE_NUM: ${{ github.event.issue.number }}
+      ISSUE_TITLE: ${{ github.event.issue.title }}
+    outputs:
+      result: ${{ steps.validate.outputs.result }}
+    steps:
+      - name: Get open linked PR
+        id: get_open_linked_pr
+        run: |
+          open_linked_pr_length=$(\
+            gh pr list \
+              --repo $REPO \
+              --state open \
+              --search "close #$ISSUE_NUM in:body" \
+              --json number | jq '. | length'\
+          )
+          echo "::set-output name=open_linked_pr_length::$open_linked_pr_length"
+
+      - name: Check open linked pr length
+        if: steps.get_open_linked_pr.outputs.open_linked_pr_length != 0
+        run: |
+          echo "Unclosed pull request is existing."
+          exit 1
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get merged linked PR
+        id: get_merged_linked_pr
+        run: |
+          merged_linked_pr_length=$(\
+            gh pr list \
+              --repo $REPO \
+              --state merged \
+              --search "close #$ISSUE_NUM in:body" \
+              --json  number | jq '. | length'\
+          )
+          echo "::set-output name=merged_linked_pr_length::$merged_linked_pr_length"
+      - name: Create files
+        if: steps.get_merged_linked_pr.outputs.merged_linked_pr_length == 0
+        run: |
+          mkdir $ISSUE_NUM
+          echo -e "こんにちは、CX事業本部 IoT事業部の若槻です。\n\n今回は、${ISSUE_TITLE}\n\n## おわりに\n\n\n\n## 参考\n\n\n\n以上" \
+            >> $ISSUE_NUM/article.md
+          echo -e "${needs.parse-issue.outputs.validation_output}" \
+            >> $ISSUE_NUM/config.json
+
+      - name: Reopen issue
+        if: ${{ github.event.issue.state }} == "closed"
+        run: gh issue reopen $ISSUE_NUM
+
+      - name: Define new branch name
+        id: define_new_branch_name
+        run: |
+          new_branch_name=$(echo "${ISSUE_NUM}-$(TZ=UTC-9 date '+%Y%m%d')")
+          echo "::set-output name=new_branch_name::$new_branch_name"
+      
+      - name: Create branch
+        uses: EndBug/add-and-commit@v9
+        with:
+          new_branch: ${{ steps.define_new_branch_name.outputs.new_branch_name }}
+
+      - name: Create PR
+        run: |
+          gh pr create \
+            --head $NEW_BRANCH_NAME \
+            --base $BASE_BRANCH_NAME \
+            --title "$ISSUE_TITLE" \
+            --body "close #${ISSUE_NUM}"
+        env:
+          NEW_BRANCH_NAME: ${{ steps.define_new_branch_name.outputs.new_branch_name }}
+          BASE_BRANCH_NAME: ${{ github.event.repository.default_branch }}
+
+      - name: Copy Commands
+        run: |
+          echo "git fetch origin ${NEW_BRANCH}"
+          echo "git checkout ${NEW_BRANCH}"
+          echo "code --reuse-window ${ISSUE_NUM}/article.md ${ISSUE_NUM}/config.json"
+          echo "result=\"success\"" >> $GITHUB_OUTPUT
+        env:
+          NEW_BRANCH: ${{ steps.define_new_branch_name.outputs.new_branch_name }}
+
+  validation-succeeded:
+    runs-on: ubuntu-latest
+    needs: create-pr
+    if: needs.create-pr.outputs.result == 'success'
     steps:
       - uses: actions/checkout@v3.3.0
 
