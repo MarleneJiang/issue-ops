@@ -90,8 +90,14 @@ jobs:
           echo "Unclosed pull request is existing."
           exit 1
 
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
 
       # - name: Get merged linked PR
       #   id: get_merged_linked_pr
@@ -126,7 +132,7 @@ jobs:
         run: |
           new_branch_name=$(echo "${ISSUE_NUM}-$(TZ=UTC-9 date '+%Y%m%d')")
           echo "::set-output name=new_branch_name::$new_branch_name"
-      
+
       - name: Create branch
         uses: EndBug/add-and-commit@v9
         with:
@@ -223,7 +229,6 @@ jobs:
         with:
           issue-number: ${{ github.event.issue.number }}
           body: ${{ steps.render.outputs.result }}
-
 
       - name: Remove label validation/succeeded
         if: env.ACT == false && contains(github.event.issue.labels.*.name, 'validation/succeeded')

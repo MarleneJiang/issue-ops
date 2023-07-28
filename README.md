@@ -1,8 +1,11 @@
-# IssueOps
+<div align="center">
+<h1>IssueOps</h1></div>
 
-通过issue触发自动化校验，然后提交pr
+<p align="center">
+<img src="https://wakatime.com/badge/user/5bfd81bc-9515-462b-a942-069791b283b7/project/af5f20a2-48c4-4ffb-81b8-7c330a9ee330.svg?style=flat-square"  alt="Develop time"/>
 
-pr合并触发关联issue关闭
+</p>
+<p align="center">通过issue触发自动化校验，然后提交pr</p>
 
 ## 参考文档
 
