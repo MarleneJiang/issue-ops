@@ -113,7 +113,7 @@ jobs:
       - name: update JSON file
         id: validate
         env:
-          VALUES: ${CONTENT}
+          VALUES: ${{needs.parse-issue.outputs.validation_output}}
           FILE: "plugins.json"
         run: node .github/actions-scripts/file.js
 
