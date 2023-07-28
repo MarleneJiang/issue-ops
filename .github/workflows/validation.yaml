@@ -106,11 +106,8 @@ jobs:
       - name: Create files
         if: steps.get_merged_linked_pr.outputs.merged_linked_pr_length == 0
         run: |
-          mkdir $ISSUE_NUM
-          echo -e "こんにちは、CX事業本部 IoT事業部の若槻です。\n\n今回は、${ISSUE_TITLE}\n\n## おわりに\n\n\n\n## 参考\n\n\n\n以上" \
-            >> $ISSUE_NUM/article.md
-          echo -e "{\n  \"postName\": \"${CONTENT}\",\n  \"title\": \"${ISSUE_TITLE}\",\n  \"description\": \"\"\n}" \
-            >> $ISSUE_NUM/config.json
+          echo -e "${CONTENT}" \
+            >> config.json
 
       - name: Reopen issue
         if: ${{ github.event.issue.state }} == "closed"
@@ -142,8 +139,9 @@ jobs:
         run: |
           echo "git fetch origin ${NEW_BRANCH}"
           echo "git checkout ${NEW_BRANCH}"
-          echo "code --reuse-window ${ISSUE_NUM}/article.md ${ISSUE_NUM}/config.json"
-          echo "result=\"success\"" >> $GITHUB_OUTPUT
+          echo "code --reuse-window config.json"
+          result="success"
+          echo "result=$result" >> $GITHUB_OUTPUT
         env:
           NEW_BRANCH: ${{ steps.define_new_branch_name.outputs.new_branch_name }}
 
