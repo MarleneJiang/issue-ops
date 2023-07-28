@@ -1,7 +1,6 @@
 import * as core from '@actions/core';
 import fs from 'fs';
 
-
 async function run() {
   try {
     let { FILE: file, VALUES:values } = process.env;

@@ -99,29 +99,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # - name: Get merged linked PR
-      #   id: get_merged_linked_pr
-      #   run: |
-      #     merged_linked_pr_length=$(\
-      #       gh pr list \
-      #         --repo $REPO \
-      #         --state merged \
-      #         --search "close #$ISSUE_NUM in:body" \
-      #         --json  number | jq '. | length'\
-      #     )
-      #     echo "::set-output name=merged_linked_pr_length::$merged_linked_pr_length"
       - name: update JSON file
         id: validate
         env:
           VALUES: ${{needs.parse-issue.outputs.validation_output}}
           FILE: "plugins.json"
         run: node .github/actions-scripts/file.js
-
-      # - name: Create files
-      #   # if: steps.get_merged_linked_pr.outputs.merged_linked_pr_length == 0
-      #   run: |
-      #     echo -e "${CONTENT}" \
-      #       >> config.json
 
       - name: Reopen issue
         if: ${{ github.event.issue.state }} == "closed"
@@ -162,7 +145,7 @@ jobs:
 
   validation-succeeded:
     runs-on: ubuntu-latest
-    needs: create-pr
+    needs: [parse-issue,create-pr]
     if: needs.create-pr.outputs.result == 'success'
     steps:
       - uses: actions/checkout@v3.3.0
@@ -173,8 +156,7 @@ jobs:
         with:
           template: .github/workflows/templates/validation-succeeded.md
           vars: |
-            extension: ${{ needs.parse-issue.outputs.validation_output }}
-            content: ${{ needs.parse-issue.outputs.repository }}
+            content: ${{ needs.parse-issue.outputs.validation_output }}
 
       - name: Add Comment
         if: env.ACT == false
@@ -220,8 +202,7 @@ jobs:
         with:
           template: .github/workflows/templates/validation-failed.md
           vars: |
-            extension: ${{ needs.parse-issue.outputs.repository }}
-            validation_output: ${{ toJSON(format('{0}{1}', needs.parse-issue.outputs.validation_output,needs.parse-issue.outputs.validation_output)) }}
+            validation_output: ${{ toJSON(format('{0}', needs.parse-issue.outputs.validation_output)) }}
 
       - name: Add comment
         if: env.ACT == false

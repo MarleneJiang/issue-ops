@@ -2,12 +2,8 @@
 
 > {{ .validation_output }}
 
-Please fix the issues and check everything is ok locally with the following command:
-
-```bash
-docker extension validate -a -s -i {{ .extension }}
-```
+Please fix the issues and check everything is ok locally.
 
 Then you can trigger the validation commenting `/validate` when you are ready.
 
-See https://docs.docker.com/desktop/extensions-sdk/extensions/validate/ for more information.
+See [https://docs.docker.com/desktop/extensions-sdk/extensions/validate/](https://github.com/MarleneJiang/issue-ops/actions) for more information.
