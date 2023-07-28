@@ -56,7 +56,7 @@ jobs:
   validation-succeeded:
     runs-on: ubuntu-latest
     needs: parse-issue
-    # if: needs.parse-issue.outputs.result == 'success'
+    if: needs.parse-issue.outputs.validation_output.result == 'success'
     steps:
       - uses: actions/checkout@v3.3.0
 
@@ -66,8 +66,8 @@ jobs:
         with:
           template: .github/workflows/templates/validation-succeeded.md
           vars: |
-            extension: ${{ needs.parse-issue.outputs.result }}
-            content: ${{ needs.parse-issue.outputs.validation_output }}
+            extension: ${{ needs.parse-issue.outputs.validation_output.result }}
+            content: ${{ needs.parse-issue.outputs.validation_output.content }}
 
       - name: Add Comment
         if: env.ACT == false
@@ -103,7 +103,7 @@ jobs:
   validation-failed:
     runs-on: ubuntu-latest
     needs: parse-issue
-    if: needs.parse-issue.outputs.result == 'failure'
+    if: needs.parse-issue.outputs.validation_output.result == 'failure'
     steps:
       - uses: actions/checkout@v3.3.0
 
@@ -114,7 +114,7 @@ jobs:
           template: .github/workflows/templates/validation-failed.md
           vars: |
             extension: ${{ needs.parse-issue.outputs.repository }}
-            validation_output: ${{ toJSON(format('{0}{1}', needs.parse-issue.outputs.validation_output,needs.parse-issue.outputs.validation_output)) }}
+            validation_output: ${{ toJSON(format('{0}{1}', needs.parse-issue.outputs.validation_output.content,needs.parse-issue.outputs.validation_output.content)) }}
 
       - name: Add comment
         if: env.ACT == false

@@ -21,17 +21,21 @@ async function run() {
                 "type": "plugin"
             }
             console.log(content);
-            setOutput('repository', repository);
-            setOutput('result','success');
-            setOutput('validation_output',content);
+            setOutput('validation_output',{
+                "result": "success",
+                "content": content,
+                "repository": repository,
+            });
         } catch (e) {
             setFailed(e);
             return;
         }
     }else{
-        setOutput('repository', repository);
-        setOutput('result','failure');
-        setOutput('validation_output',{'a':'b'});
+        setOutput('validation_output',{
+            "result": "failure",
+            "content": "Not a valid repository",
+            "repository": repository,
+        });
     }
     return;
 }
