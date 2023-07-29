@@ -6,9 +6,9 @@ async function run() {
     if (repository.includes('https://raw.githubusercontent.com/')) {
         try {
             const response = await fetch(new URL(repository.replace(/[<>]/g, '')));
-            console.log(repository);
             const data = await response.text();
             const parsed = toml.parse(data);
+            console.log(repository);
             const content = {
                 "name": parsed.project.name,
                 "description": parsed.project.description,
