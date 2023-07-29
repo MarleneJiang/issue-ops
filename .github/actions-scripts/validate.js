@@ -5,10 +5,10 @@ async function run() {
     if (!repository) throw new Error('REPOSITORY env var is not set')
     if (repository.includes('https://raw.githubusercontent.com/')) {
         try {
-            console.log(repository);
             const response = await fetch(new URL(repository.replace(/[<>]/g, '')));
             const data = await response.text();
             const parsed = toml.parse(data);
+            console.log(repository);
             const content = {
                 "name": parsed.project.name,
                 "description": parsed.project.description,
