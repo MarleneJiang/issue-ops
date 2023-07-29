@@ -7,8 +7,8 @@ async function run() {
         try {
             const response = await fetch(new URL(repository.replace(/[<>]/g, '')));
             const data = await response.text();
+            console.log(new URL(repository.replace(/[<>]/g, '')),data);
             const parsed = toml.parse(data);
-            console.log(repository);
             const content = {
                 "name": parsed.project.name,
                 "description": parsed.project.description,
