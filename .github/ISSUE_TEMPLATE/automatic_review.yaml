@@ -1,6 +1,6 @@
 name: Submit to plugin marketplace
 description: Submit your plugin to be automatically validated and published on the marketplace.
-title: '[Submission]: '
+title: '[Plugin]: '
 assignees: []
 body:
   - type: markdown
@@ -10,8 +10,8 @@ body:
   - type: input
     attributes:
       label: AliceBot plugin repository name
-      description: Provide the plugin repository name for your plugin.
-      placeholder: idealeap/bumpBot
+      description: Provide the plugin repository pyproject toml URL for your plugin.
+      placeholder: https://raw.githubusercontent.com/AliceBotProject/alicebot/master/pyproject.toml
     validations:
       required: true
   - type: markdown
@@ -22,7 +22,7 @@ body:
     attributes:
       label: Terms of services
       options:
-        - label: I accept the [term of services](xxx)
+        - label: I accept the [term of services](https://github.com/AliceBotProject/alicebot)
     validations:
       required: true
   - type: markdown

@@ -18,7 +18,8 @@ async function run() {
                 "author": parsed.project.authors[0].name,
                 "pip": parsed.project.name,
                 "vertified": false,
-                "type": "plugin"
+                "type": "plugin",
+                "update_time":  new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''),//标准中国时间
             }
             console.log(content);
             setOutput('validation_output',JSON.stringify(content))
