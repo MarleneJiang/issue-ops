@@ -7,17 +7,10 @@
 </p>
 <p align="center">通过issue触发自动化校验，然后提交pr</p>
 
-## ✨ 使用说明
+## ✨ 版本示意图
 
-1. 按照模板新建issue，输入插件仓库的工程Toml文件地址，例如:[https://raw.githubusercontent.com/AliceBotProject/alicebot/master/pyproject.toml](https://raw.githubusercontent.com/AliceBotProject/alicebot/master/pyproject.toml),勾选条款
+![image](https://github.com/MarleneJiang/issue-ops/assets/49270362/1d4e4e49-43cd-4d41-9ca2-5118da8ccd1d)
 
-2. 等待自动化校验完成，如果校验失败，会在issue中回复失败原因
-
-3. 若插件更新，只需在原先issue中输入`/validate`，则可再次触发自动化校验
-
-4. 校验成功后，会自动提交pr，等待管理员审核
-
-5. 审核通过后，会自动合并pr，关闭issue
 
 ## 🍜 参考文档
 
