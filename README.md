@@ -25,6 +25,7 @@
 2. [managing-issues-and-pull-requests](https://docs.github.com/zh/actions/managing-issues-and-pull-requests)
 3. [extensions-submissions](https://github.com/docker/extensions-submissions)
 4. [creating-a-file-branch-pull-request-from-github-actions-by-issue-event](https://dev.classmethod.jp/articles/creating-a-file-branch-pull-request-from-github-actions-by-issue-event/)
+5. [building-and-testing-python](https://docs.github.com/zh/actions/automating-builds-and-tests/building-and-testing-python)
 
 ## 📄 作者
 

@@ -1,0 +1,45 @@
+[project]
+name = "alicebot-plugin"
+version = "0.1.0"
+requires-python = ">=3.8"
+dependencies = [
+    "importlib>=1.0.4",
+    "alicebot[all]>=0.7.1",
+]
+
+[tool.pdm.dev-dependencies]
+lint = ["black", "ruff"]
+
+[tool.black]
+target-version = ["py38", "py39", "py310", "py311"]
+
+[tool.ruff]
+line-length = 88
+select = ["ALL"]
+ignore = [
+  "C90",     # mccabe
+  "FBT",     # flake8-boolean-trap
+  "COM",     # flake8-commas
+  "E501",    # Line too long, handled by black
+  "ANN101",  # Missing type annotation for self
+  "ANN102",  # Missing type annotation for cls
+  "ANN401",  # Dynamically typed expressions (typing.Any) are disallowed
+  "S101",    # Use of assert detected
+  "PERF203", # try-except within a loop incurs performance overhead
+]
+target-version = "py38"
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.pyright]
+pythonVersion = "3.8"
+pythonPlatform = "All"
+typeCheckingMode = "strict"
+reportCallInDefaultInitializer = true
+reportImplicitOverride = true
+reportImportCycles = true
+reportPropertyTypeMismatch = true
+reportShadowedImports = true
+reportUninitializedInstanceVariable = true
+reportUnnecessaryTypeIgnoreComment = true
