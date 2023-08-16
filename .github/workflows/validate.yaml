@@ -79,7 +79,7 @@ jobs:
           echo "pypi_name=$pypi_name" >> $GITHUB_OUTPUT
 
       # 启动py脚本环境，并传入module_name,pypi_name,ISSUE_TITLE
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -95,14 +95,21 @@ jobs:
           PYPI_NAME: ${{ steps.set-output.outputs.pypi_name }}
         run: python .github/actions_scripts/parse.py
 
-      - name: print output
+
+  test:
+    runs-on: windows-latest
+    needs: parse-issue
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: print
         env:
-          OUTPUT: ${{ steps.run.outputs.output }}
-          TYPE: ${{ steps.run.outputs.type }}
-          NAME: ${{ steps.run.outputs.name }}
-          PYPI_NAME: ${{ steps.set-output.outputs.pypi_name }}
-          MODULE_NAME: ${{ steps.set-output.outputs.module_name }}
-          RESULT: ${{ steps.run.outputs.result }}
+          OUTPUT: ${{ needs.parse-issue.outputs.output }}
+          TYPE: ${{ needs.parse-issue.outputs.type }}
+          NAME: ${{ needs.parse-issue.outputs.name }}
+          PYPI_NAME: ${{ needs.parse-issue.outputs.pypi_name }}
+          MODULE_NAME: ${{ needs.parse-issue.outputs.module_name }}
+          RESULT: ${{ needs.parse-issue.outputs.result }}
         run: |
           echo "OUTPUT=$OUTPUT" >> $GITHUB_OUTPUT
           echo "TYPE=$TYPE" >> $GITHUB_OUTPUT
@@ -110,7 +117,6 @@ jobs:
           echo "PYPI_NAME=$PYPI_NAME" >> $GITHUB_OUTPUT
           echo "MODULE_NAME=$MODULE_NAME" >> $GITHUB_OUTPUT
           echo "RESULT=$RESULT" >> $GITHUB_OUTPUT
-
 
   validation-failed:
     runs-on: ubuntu-latest
