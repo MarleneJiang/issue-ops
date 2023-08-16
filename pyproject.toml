@@ -1,10 +1,11 @@
 [project]
-name = "alicebot-plugin"
+name = "alicebot-marketplace"
 version = "0.1.0"
 requires-python = ">=3.8"
 dependencies = [
     "importlib>=1.0.4",
     "alicebot[all]>=0.7.1",
+    "requests>=2.31.0",
 ]
 
 [tool.pdm.dev-dependencies]

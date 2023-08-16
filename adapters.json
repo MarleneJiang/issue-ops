@@ -1,0 +1,15 @@
+{
+  "adapters": [
+    {
+      "module_name": "adapter_module",
+      "pypi_name": "adapter_pypi",
+      "name": "适配器插件",
+      "description": "这是一个适配器插件。",
+      "author": "作者名",
+      "license": "Apache",
+      "homepage": "http://github.com/adapter",
+      "tags": ["adapter"],
+      "is_official": true
+    }
+  ]
+}
