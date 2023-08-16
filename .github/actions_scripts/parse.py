@@ -56,18 +56,21 @@ def main()->None:
   print("开始解析")
   try:
       title = os.environ["TITLE"]
+      print("title:",title)
   except KeyError:
     set_multiline_output("result", "error")
     set_multiline_output("output", "Missing required input `TITLE`.")
     return
   try:
       pypi_name = os.environ["PYPI_NAME"]
+      print("pypi_name:",pypi_name)
   except KeyError:
     set_multiline_output("result", "error")
     set_multiline_output("output", "Missing required input `PYPI_NAME`.")
     return
   try:
     parsed = parse_title(title)
+    print("parsed:",parsed)
   except ValueError as e:
     set_multiline_output("result", "error")
     set_multiline_output("output", str(e))
@@ -76,6 +79,7 @@ def main()->None:
     set_multiline_output("result", "error")
     set_multiline_output("output", "输入的pypi_name存在问题")
     return
+  print("解析成功~")
   set_multiline_output("result", "sucess")
   set_multiline_output("output", "")
   set_multiline_output("type", parsed.get("type",""))

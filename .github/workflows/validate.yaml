@@ -57,8 +57,8 @@ jobs:
       ISSUE_NUM: ${{ github.event.issue.number }}
       ISSUE_TITLE: ${{ github.event.issue.title }}
     outputs:
-      module_name: ${{ steps.set-output-module.outputs.module_name }}
-      pypi_name: ${{ steps.set-output-pypi.outputs.pypi_name }}
+      module_name: ${{ steps.set-output.outputs.module_name }}
+      pypi_name: ${{ steps.set-output.outputs.pypi_name }}
       result: ${{ steps.run.outputs.result }}
       output: ${{ steps.run.outputs.output }}
       type: ${{ steps.run.outputs.type }}
@@ -68,19 +68,13 @@ jobs:
         id: parse
         uses: zentered/issue-forms-body-parser@v1.5.1
 
-      - name: Get Module Input
-        id: set-output-module
+      - name: Get Inputs
+        id: set-output
         env:
           JSON_DATA: ${{ steps.parse.outputs.data }}
         run: |
           module_name=$(echo $JSON_DATA | jq -r '.["module-name"].text' )
           echo "module_name=$module_name" >> $GITHUB_OUTPUT
-        
-      - name: Get Pypi Input
-        id: set-output-pypi
-        env:
-          JSON_DATA: ${{ steps.parse.outputs.data }}
-        run: |
           pypi_name=$(echo $JSON_DATA | jq -r '.["pypi-name"].text' )
           echo "pypi_name=$pypi_name" >> $GITHUB_OUTPUT
 
@@ -98,7 +92,7 @@ jobs:
         id: run
         env:
           TITLE: ${{ env.ISSUE_TITLE }}
-          PYPI_NAME: ${{ steps.set-output-pypi.outputs.pypi_name }}
+          PYPI_NAME: ${{ steps.set-output.outputs.pypi_name }}
         run: |
           python .github/actions_scripts/parse.py
 
