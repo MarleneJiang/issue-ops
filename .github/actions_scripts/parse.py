@@ -32,6 +32,8 @@ def get_response(name: str) -> dict[str, Any] | None:
 
 def check_pypi(name:str)->bool:
   """Check module filename for conflict."""
+  if (name =="null"):
+    return False
   response = get_response(name)
 
   if response:
