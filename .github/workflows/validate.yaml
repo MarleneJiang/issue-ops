@@ -95,12 +95,13 @@ jobs:
           PYPI_NAME: ${{ steps.set-output.outputs.pypi_name }}
         run: python .github/actions_scripts/parse.py
 
-  test:
-    runs-on: ubuntu-latest
-    needs: parse-issue
-    steps:
-      - name: Install dependencies
-        run: echo "121"
+      - name: print output
+        run: |
+          echo "result=${{ steps.run.outputs.result }}" >> $GITHUB_OUTPUT
+          echo "output=${{ steps.run.outputs.output }}" >> $GITHUB_OUTPUT
+          echo "type=${{ steps.run.outputs.type }}" >> $GITHUB_OUTPUT
+          echo "name=${{ steps.run.outputs.name }}" >> $GITHUB_OUTPUT
+
 
   validation-failed:
     runs-on: ubuntu-latest
