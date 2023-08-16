@@ -48,6 +48,9 @@ jobs:
           comment-id: ${{ github.event.comment.id }}
           reactions: '+1'
   parse-issue:
+    needs: [ react-to-new-issue, is-revalidation ]
+    if: failure() == false && github.event.issue.state == 'open'
+    name: Parse Issue
     runs-on: ubuntu-latest
     env:
       REPO: ${{ github.repository }}
@@ -76,6 +79,7 @@ jobs:
           echo "pypi_name=$pypi_name" >> $GITHUB_OUTPUT
 
       # 启动py脚本环境，并传入module_name,pypi_name,ISSUE_TITLE
+      - uses: actions/checkout@v3.3.0
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
