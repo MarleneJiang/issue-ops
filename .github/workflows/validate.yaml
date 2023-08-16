@@ -102,12 +102,14 @@ jobs:
           NAME: ${{ steps.run.outputs.name }}
           PYPI_NAME: ${{ steps.set-output.outputs.pypi_name }}
           MODULE_NAME: ${{ steps.set-output.outputs.module_name }}
+          RESULT: ${{ steps.run.outputs.result }}
         run: |
           echo "OUTPUT=$OUTPUT" >> $GITHUB_OUTPUT
           echo "TYPE=$TYPE" >> $GITHUB_OUTPUT
           echo "NAME=$NAME" >> $GITHUB_OUTPUT
           echo "PYPI_NAME=$PYPI_NAME" >> $GITHUB_OUTPUT
           echo "MODULE_NAME=$MODULE_NAME" >> $GITHUB_OUTPUT
+          echo "RESULT=$RESULT" >> $GITHUB_OUTPUT
 
 
   validation-failed:
