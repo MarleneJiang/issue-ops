@@ -96,11 +96,18 @@ jobs:
         run: python .github/actions_scripts/parse.py
 
       - name: print output
+        env:
+          OUTPUT: ${{ steps.run.outputs.output }}
+          TYPE: ${{ steps.run.outputs.type }}
+          NAME: ${{ steps.run.outputs.name }}
+          PYPI_NAME: ${{ steps.set-output.outputs.pypi_name }}
+          MODULE_NAME: ${{ steps.set-output.outputs.module_name }}
         run: |
-          echo "result=${{ steps.run.outputs.result }}" >> $GITHUB_OUTPUT
-          echo "output=${{ steps.run.outputs.output }}" >> $GITHUB_OUTPUT
-          echo "type=${{ steps.run.outputs.type }}" >> $GITHUB_OUTPUT
-          echo "name=${{ steps.run.outputs.name }}" >> $GITHUB_OUTPUT
+          echo "OUTPUT=$OUTPUT" >> $GITHUB_OUTPUT
+          echo "TYPE=$TYPE" >> $GITHUB_OUTPUT
+          echo "NAME=$NAME" >> $GITHUB_OUTPUT
+          echo "PYPI_NAME=$PYPI_NAME" >> $GITHUB_OUTPUT
+          echo "MODULE_NAME=$MODULE_NAME" >> $GITHUB_OUTPUT
 
 
   validation-failed:
