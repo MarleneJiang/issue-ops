@@ -5,7 +5,7 @@ import os
 import re
 import uuid
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import requests
 
@@ -51,34 +51,34 @@ def parse_title(title:str)->dict[str, Any]:
     msg = "标题格式错误"
     raise ValueError(msg)
 
-def main()->None:
+def main()->Literal[0]:
   """信息解析:1. 标题的type解析,如果不符合就报错 2. 提取name、module_name、pypi_name,如果不符合就报错 3. pypi_name在pip网站中检查,不存在则报错."""
   try:
       title = os.environ["TITLE"]
   except KeyError:
     set_multiline_output("result", "error")
     set_multiline_output("output", "Missing required input `TITLE`.")
-    return
+    return 0
   try:
       pypi_name = os.environ["PYPI_NAME"]
   except KeyError:
     set_multiline_output("result", "error")
     set_multiline_output("output", "Missing required input `PYPI_NAME`.")
-    return
+    return 0
   try:
     parsed = parse_title(title)
   except ValueError as e:
     set_multiline_output("result", "error")
     set_multiline_output("output", str(e))
-    return
+    return 0
   if (check_pypi(pypi_name) is False):
     print("解析失败~")
     set_multiline_output("result", "error")
     set_multiline_output("output", "输入的pypi_name存在问题")
-    return
+    return 0
   set_multiline_output("result", "sucess")
   set_multiline_output("output", "")
   set_multiline_output("type", parsed.get("type",""))
   set_multiline_output("name", parsed.get("name",""))
-  return
+  return 0
 main()
