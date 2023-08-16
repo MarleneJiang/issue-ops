@@ -93,8 +93,14 @@ jobs:
         env:
           TITLE: ${{ env.ISSUE_TITLE }}
           PYPI_NAME: ${{ steps.set-output.outputs.pypi_name }}
-        run: |
-          python .github/actions_scripts/parse.py
+        run: python .github/actions_scripts/parse.py
+
+  test:
+    runs-on: ubuntu-latest
+    needs: parse-issue
+    steps:
+      - name: Install dependencies
+        run: echo "121"
 
   validation-failed:
     runs-on: ubuntu-latest
