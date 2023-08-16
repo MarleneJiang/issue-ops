@@ -73,7 +73,7 @@ jobs:
         env:
           JSON_DATA: ${{ steps.parse.outputs.data }}
         run: |
-          module_name=$(echo $JSON_DATA | jq -r '.["module_name"].text' )
+          module_name=$(echo $JSON_DATA | jq -r '.["module-name"].text' )
           echo "module_name=$module_name" >> $GITHUB_OUTPUT
         
       - name: Get Pypi Input
@@ -81,7 +81,7 @@ jobs:
         env:
           JSON_DATA: ${{ steps.parse.outputs.data }}
         run: |
-          pypi_name=$(echo $JSON_DATA | jq -r '.["pypi_name"].text' )
+          pypi_name=$(echo $JSON_DATA | jq -r '.["pypi-name"].text' )
           echo "pypi_name=$pypi_name" >> $GITHUB_OUTPUT
 
       # 启动py脚本环境，并传入module_name,pypi_name,ISSUE_TITLE

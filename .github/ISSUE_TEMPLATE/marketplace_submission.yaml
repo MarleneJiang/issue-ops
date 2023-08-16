@@ -8,11 +8,11 @@ body:
         请在标题中括号内填入类型，例如：[plugin]，冒号后附带插件名称，例如：[plugin]: xxx
   - type: input
     attributes:
-      label: module_name
+      label: module-name
       description: 导入时的模块名称，类型为bot时不填
   - type: input
     attributes:
-      label: pypi_name
+      label: pypi-name
       description: 导入时的模块名称，类型为bot时不填
   - type: markdown
     attributes:

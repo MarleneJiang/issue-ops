@@ -53,6 +53,7 @@ def parse_title(title:str)->dict[str, Any]:
 
 def main()->None:
   """信息解析:1. 标题的type解析,如果不符合就报错 2. 提取name、module_name、pypi_name,如果不符合就报错 3. pypi_name在pip网站中检查,不存在则报错."""
+  print("开始解析")
   try:
       title = os.environ["TITLE"]
   except KeyError:
@@ -79,5 +80,6 @@ def main()->None:
   set_multiline_output("output", "")
   set_multiline_output("type", parsed.get("type",""))
   set_multiline_output("name", parsed.get("name",""))
+  print("解析成功")
   return
 main()
