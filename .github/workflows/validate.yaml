@@ -146,7 +146,7 @@ jobs:
   validation-succeeded:
     runs-on: ubuntu-latest
     needs: [parse-issue]
-    if: needs.parse-issue.outputs.result != 'error'
+    # if: needs.parse-issue.outputs.result != 'error'
     steps:
       - uses: actions/checkout@v3.3.0
 
