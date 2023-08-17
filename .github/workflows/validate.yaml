@@ -171,7 +171,7 @@ jobs:
       output: ${{ steps.test.outputs.output }}
     steps:
       - uses: actions/checkout@v3
-            # Set up Python 3.6 environment
+            # Set up Python 3.8 environment
       - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
@@ -247,10 +247,112 @@ jobs:
       - name: Mark job as failed
         run: exit 1
 
+  create-pr:
+    runs-on: ubuntu-latest
+    needs: [validate,parse-issue]
+    if: always() && needs.validate.outputs.result == 'success' && needs.parse-issue.outputs.result == 'success'
+    env:
+      REPO: ${{ github.repository }}
+      ISSUE_NUM: ${{ github.event.issue.number }}
+      ISSUE_TITLE: ${{ github.event.issue.title }}
+      TYPE: ${{ needs.parse-issue.outputs.type }}
+    outputs:
+      result: ${{ steps.copy-commands.outputs.result }}
+      file_json: ${{ steps.file.outputs.file_json }}
+    steps:
+      - name: Get open linked PR
+        id: get_open_linked_pr
+        run: |
+          open_linked_pr_length=$(\
+            gh pr list \
+              --repo $REPO \
+              --state open \
+              --search "close #$ISSUE_NUM in:body" \
+              --json number | jq '. | length'\
+          )
+          echo "::set-output name=open_linked_pr_length::$open_linked_pr_length"
+
+      - name: Check open linked pr length
+        if: steps.get_open_linked_pr.outputs.open_linked_pr_length != 0
+        run: |
+          echo "Unclosed pull request is existing."
+          exit 1
+
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+
+      # Set up cache for pip
+      - name: Get pip cache dir
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+
+      - name: Cache pip
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Change file
+        id: file
+        env:
+          TYPE: ${{ needs.parse-issue.outputs.type }}
+          MODULE_NAME: ${{ needs.parse-issue.outputs.module_name }}
+          PYPI_NAME: ${{ needs.parse-issue.outputs.pypi_name }}
+          NAME: ${{ needs.validate.outputs.name }}
+          DESCRIPTION: ${{ needs.validate.outputs.description }}
+          AUTHOR: ${{ needs.validate.outputs.author }}
+          LICENSE: ${{ needs.validate.outputs.license }}
+          HOMEPAGE: ${{ needs.validate.outputs.homepage }}
+          TAGS: ${{ needs.validate.outputs.tags }}
+        run: |
+          python .github/actions_scripts/file.py
+
+      - name: Reopen issue
+        if: ${{ github.event.issue.state }} == "closed"
+        run: gh issue reopen $ISSUE_NUM
+
+      - name: Define new branch name
+        id: define_new_branch_name
+        run: |
+          new_branch_name=$(echo "${ISSUE_NUM}-$(TZ=UTC-9 date '+%Y%m%d')")
+          echo "::set-output name=new_branch_name::$new_branch_name"
+
+      - name: Create branch
+        uses: EndBug/add-and-commit@v9
+        with:
+          new_branch: ${{ steps.define_new_branch_name.outputs.new_branch_name }}
+
+      - name: Create PR
+        run: |
+          gh pr create \
+            --head $NEW_BRANCH_NAME \
+            --base $BASE_BRANCH_NAME \
+            --title "$ISSUE_TITLE" \
+            --body "close #${ISSUE_NUM}"
+        env:
+          NEW_BRANCH_NAME: ${{ steps.define_new_branch_name.outputs.new_branch_name }}
+          BASE_BRANCH_NAME: ${{ github.event.repository.default_branch }}
+
+      - name: Copy Commands
+        id: copy-commands
+        run: |
+          echo "git fetch origin ${NEW_BRANCH}"
+          echo "git checkout ${NEW_BRANCH}"
+          echo "code --reuse-window ${TYPE}.json"
+          result="success"
+          echo "result=$result" >> $GITHUB_OUTPUT
+        env:
+          NEW_BRANCH: ${{ steps.define_new_branch_name.outputs.new_branch_name }}
+
   validation-succeeded:
     runs-on: ubuntu-latest
-    needs: validate
-    if: always() && needs.validate.outputs.result == 'success'
+    needs: [validate,create-pr]
+    if: always() && needs.validate.outputs.result == 'success' && needs.create-pr.outputs.result == 'success'
     steps:
       - uses: actions/checkout@v3.3.0
 
