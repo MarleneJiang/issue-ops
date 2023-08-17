@@ -70,6 +70,7 @@ jobs:
   parse-issue:
     name: Parse Issue
     needs: [react-to-new-issue,is-revalidation,edited-old-issue]
+    if: always() && (needs.react-to-new-issue.result == 'success' || needs.is-revalidation.result == 'success' || needs.edited-old-issue.result == 'success')
     runs-on: ubuntu-latest
     env:
       REPO: ${{ github.repository }}
