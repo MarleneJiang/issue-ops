@@ -107,17 +107,16 @@ jobs:
           PYPI_NAME: ${{ steps.set-output.outputs.pypi_name }}
         run: python .github/actions_scripts/parse.py
 
-
-  test:
+  validate:
     runs-on: ubuntu-latest
-    if: always()
+    if: always() && needs.parse-issue.outputs.result == 'success'
     needs: 
       - parse-issue
     steps:
       - uses: actions/checkout@v3
             # Set up Python 3.6 environment
       - name: Set up Python 3.8
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4
         with:
           python-version: "3.8"
 
@@ -134,26 +133,18 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      - name: print
+      - name: alicebot test
         env:
-          OUTPUT: ${{ needs.parse-issue.outputs.output }}
-          TYPE: ${{ needs.parse-issue.outputs.type }}
-          NAME: ${{ needs.parse-issue.outputs.name }}
           PYPI_NAME: ${{ needs.parse-issue.outputs.pypi_name }}
           MODULE_NAME: ${{ needs.parse-issue.outputs.module_name }}
-          RESULT: ${{ needs.parse-issue.outputs.result }}
         run: |
-          echo "OUTPUT=$OUTPUT" >> $GITHUB_OUTPUT
-          echo "TYPE=$TYPE" >> $GITHUB_OUTPUT
-          echo "NAME=$NAME" >> $GITHUB_OUTPUT
-          echo "PYPI_NAME=$PYPI_NAME" >> $GITHUB_OUTPUT
-          echo "MODULE_NAME=$MODULE_NAME" >> $GITHUB_OUTPUT
-          echo "RESULT=$RESULT" >> $GITHUB_OUTPUT
+          pip install $PYPI_NAME
+          python .github/actions_scripts/test.py
 
   validation-failed:
     runs-on: ubuntu-latest
     needs: parse-issue
-    if: always()
+    if: always() && needs.parse-issue.outputs.result == 'error'
     steps:
       - uses: actions/checkout@v3.3.0
 
@@ -197,10 +188,11 @@ jobs:
 
       - name: Mark job as failed
         run: exit 1
+
   validation-succeeded:
     runs-on: ubuntu-latest
     needs: parse-issue
-    if: always()
+    if: always() && needs.parse-issue.outputs.result == 'success'
     steps:
       - uses: actions/checkout@v3.3.0
 
