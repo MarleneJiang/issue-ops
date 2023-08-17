@@ -21,6 +21,11 @@ jobs:
       REPO: ${{ github.repository }}
       ISSUE_NUM: ${{ github.event.issue.number }}
       ISSUE_TITLE: ${{ github.event.issue.title }}
+    outputs:
+      result: ${{ steps.run.outputs.result }}
+      output: ${{ steps.run.outputs.output }}
+      type: ${{ steps.run.outputs.type }}
+      name: ${{ steps.run.outputs.name }}
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
@@ -47,7 +52,8 @@ jobs:
         id: run
         env:
           TITLE: ${{ env.ISSUE_TITLE }}
-        run: python .github/actions_scripts/main.py
+          PYPI_NAME: "alicebot"
+        run: python .github/actions_scripts/parse.py
 
   test:
     runs-on: ubuntu-latest
@@ -75,5 +81,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: print
+        env:
+          OUTPUT: ${{ needs.parse-issue.outputs.output }}
+          TYPE: ${{ needs.parse-issue.outputs.type }}
+          NAME: ${{ needs.parse-issue.outputs.name }}
+          RESULT: ${{ needs.parse-issue.outputs.result }}
         run: |
-          echo "123"
+          echo "OUTPUT=$OUTPUT" >> $GITHUB_OUTPUT
+          echo "TYPE=$TYPE" >> $GITHUB_OUTPUT
+          echo "NAME=$NAME" >> $GITHUB_OUTPUT
+          echo "RESULT=$RESULT" >> $GITHUB_OUTPUT
