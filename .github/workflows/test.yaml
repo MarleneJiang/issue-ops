@@ -12,43 +12,7 @@ on:
       - edited
 
 jobs:
-  react-to-new-issue:
-    name: Post a comment to new issues
-    if: github.event_name == 'issues' && github.event.action == 'opened'
-    runs-on: ubuntu-latest
-    outputs:
-      comment-id: ${{ steps.comment.outputs.comment-id }}
-    steps:
-      - name: Add comment
-        id: comment
-        uses: peter-evans/create-or-update-comment@v2
-        with:
-          issue-number: ${{ github.event.issue.number }}
-          body: |
-            感谢你的提交.
-
-            自动验证将在几分钟内开始.
-  is-revalidation:
-    if: github.event.issue.state == 'open' && github.event_name == 'issue_comment'
-    name: Verify if the comment is a revalidation request
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run /validate command
-        env:
-          COMMENT_BODY: ${{ github.event.comment.body }}
-        run: |
-          command=$(echo "$COMMENT_BODY" | head -1)
-          if [[ $command != "/validate"* ]]; then
-            echo "No /validate command found in first line of the comment \"${command}\", skipping" >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
-      - name: Add reactions
-        uses: peter-evans/create-or-update-comment@v2
-        with:
-          comment-id: ${{ github.event.comment.id }}
-          reactions: '+1'
   parse-issue:
-    needs: [ react-to-new-issue, is-revalidation ]
     if: failure() == false && github.event.issue.state == 'open'
     name: Parse Issue
     runs-on: ubuntu-latest
