@@ -62,7 +62,7 @@ def main() -> None:
         if check_pypi(pypi_name) is False:
           set_action_outputs({"result": "error", "output": "输入的pypi_name存在问题"})
         else:
-          set_action_outputs({"result": "sucess", "output": "", "type": parsed.get("type", ""), "name": parsed.get("name", "")})
+          set_action_outputs({"result": "success", "output": "", "type": parsed.get("type", ""), "name": parsed.get("name", "")})
     except ValueError as e:
         set_action_outputs({"result": "error", "output": str(e)})
 
