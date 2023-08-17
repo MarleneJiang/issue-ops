@@ -1,7 +1,6 @@
 """添加信息:1. 获取对应json文件并解析 2. 查询是否有同名插件,若存在则覆盖,并更新时间 3. 否则添加至最后一行,并附上更新时间 4. 保存至文件."""
 from __future__ import annotations
 
-import ast
 import json
 import os
 from pathlib import Path
@@ -17,7 +16,7 @@ description = os.environ["DESCRIPTION"]
 author = os.environ["AUTHOR"]
 license_info = os.environ["LICENSE"]
 homepage = os.environ["HOMEPAGE"]
-tags = ast.literal_eval(os.environ["TAGS"])
+tags = os.environ["TAGS"].replace("[", "").replace("]", "").replace("'", "").replace('"', "").split(",")
 
 
 def get_json() -> dict[str, Any]:

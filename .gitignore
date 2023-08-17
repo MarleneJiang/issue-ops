@@ -4,3 +4,4 @@ node_modules/
 .pdm-python
 pdm.lock
 .vscode/launch.json
+*.pyc
