@@ -12,8 +12,15 @@ on:
       - edited
 
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test
+        run: |
+          echo "123"
   parse-issue:
     if: failure() == false && github.event.issue.state == 'open'
+    needs: [tests]
     name: Parse Issue
     runs-on: ubuntu-latest
     env:
