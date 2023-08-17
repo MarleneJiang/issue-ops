@@ -12,21 +12,45 @@ on:
       - edited
 
 jobs:
-  tests:
+  react-to-new-issue:
+    name: Post a comment to new issues
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    outputs:
+      comment-id: ${{ steps.comment.outputs.comment-id }}
+    steps:
+      - name: Add comment
+        id: comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Thank you for submitting your plugin.
+
+            The validation of your submission will start soon.
+
+  is-revalidation:
+    if: github.event.issue.state == 'open' && github.event_name == 'issue_comment'
+    name: Verify if the comment is a revalidation request
     runs-on: ubuntu-latest
     steps:
-      - name: test
+      - name: Run /validate command
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          echo "123"
-  testz:
-    runs-on: ubuntu-latest
-    steps:
-      - name: testz
-        run: |
-          echo "256"
+          command=$(echo "$COMMENT_BODY" | head -1)
+          if [[ $command != "/validate"* ]]; then
+            echo "No /validate command found in first line of the comment \"${command}\", skipping" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+      - name: Add reactions
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: '+1'
   parse-issue:
     if: failure() == false && github.event.issue.state == 'open'
-    needs: [tests,testz]
+    needs: [react-to-new-issue,is-revalidation]
     name: Parse Issue
     runs-on: ubuntu-latest
     env:
