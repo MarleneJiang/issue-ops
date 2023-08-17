@@ -18,9 +18,15 @@ jobs:
       - name: test
         run: |
           echo "123"
+  testz:
+    runs-on: ubuntu-latest
+    steps:
+      - name: testz
+        run: |
+          echo "256"
   parse-issue:
     if: failure() == false && github.event.issue.state == 'open'
-    needs: [tests]
+    needs: [tests,testz]
     name: Parse Issue
     runs-on: ubuntu-latest
     env:
