@@ -1,5 +1,7 @@
-:white_check_mark: The plug-in has been automatically verified, please wait for manual review.
+# 自动审核成功
 
-The following is the information submitted for this validation:
+:white_check_mark: 已验证通过，请等待人工审核。
+
+以下是即将合并的 PR 信息：
 
 {{ .content }}

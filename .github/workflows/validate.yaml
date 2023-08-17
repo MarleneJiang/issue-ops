@@ -371,7 +371,7 @@ jobs:
         with:
           template: .github/workflows/templates/validation-succeeded.md
           vars: |
-            content: ${{ needs.validate.outputs.result }}
+            content: ${{ needs.create-pr.outputs.file_json }}
 
       - name: Add Comment
         uses: peter-evans/create-or-update-comment@v3.0.2

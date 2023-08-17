@@ -1,7 +1,7 @@
-:x: Validation failed with the following errors
+# 自动审核失败
+
+:x: 验证失败，以下是错误原因
 
 > {{ .validation_output }}
 
-Please fix the issues and check everything is ok locally.
-
-Then you can trigger the validation commenting `/validate` when you are ready.
+请修复问题并在本地确认一切正常后，再次触发验证，方法是在评论中输入 `/validate`。

@@ -3,23 +3,14 @@ from __future__ import annotations
 
 import os
 import re
-from pathlib import Path
 from typing import Any
 
 import requests
+from utils import set_action_outputs
 
 BASE_URL = "https://pypi.org/pypi"
 CODE = 404
 
-def set_action_outputs(output_pairs: dict[str, str]) -> None:
-  """Sets the GitHub Action outputs, with backwards compatibility for self-hosted runners without a GITHUB_OUTPUT environment file. Keyword arguments: output_pairs - Dictionary of outputs with values."""
-  if "GITHUB_OUTPUT" in os.environ :
-    with Path(os.environ["GITHUB_OUTPUT"]).open(mode="a") as f :
-      for key, value in output_pairs.items() :
-        f.write(f"{key}={value}\n")
-  else :
-    for key, value in output_pairs.items() :
-      print(f"::set-output name={key}::{value}")  # noqa: T201
 
 def get_response(name: str) -> dict[str, Any] | None:
     """Request response from PyPi API."""
@@ -60,9 +51,16 @@ def main() -> None:
     try:
         parsed = parse_title(title)
         if check_pypi(pypi_name) is False:
-          set_action_outputs({"result": "error", "output": "输入的pypi_name存在问题"})
+            set_action_outputs({"result": "error", "output": "输入的pypi_name存在问题"})
         else:
-          set_action_outputs({"result": "success", "output": "", "type": parsed.get("type", ""), "name": parsed.get("name", "")})
+            set_action_outputs(
+                {
+                    "result": "success",
+                    "output": "",
+                    "type": parsed.get("type", ""),
+                    "name": parsed.get("name", ""),
+                }
+            )
     except ValueError as e:
         set_action_outputs({"result": "error", "output": str(e)})
 
