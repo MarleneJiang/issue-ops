@@ -8,7 +8,10 @@
       "author": "作者名",
       "license": "MIT",
       "homepage": "http://github.com/example",
-      "tags": ["tag1", "tag2"],
+      "tags": [
+        "tag1",
+        "tag2"
+      ],
       "is_official": true
     },
     {
@@ -17,7 +20,28 @@
       "name": "另一个插件",
       "description": "这是另一个示例插件。",
       "author": "另一作者",
-      "tags": ["tag3", "tag4"],
+      "tags": [
+        "tag3",
+        "tag4"
+      ],
+      "is_official": false
+    },
+    {
+      "module_name": "alicebot",
+      "pypi_name": "alicebot",
+      "name": "alicebot",
+      "description": "A simply asynchronous python chatbot framework.",
+      "author": "st1020",
+      "license": "MIT",
+      "homepage": "https://docs.alicebot.dev/",
+      "tags": [
+        "bot",
+        "chatbot",
+        "qq",
+        "qqbot",
+        "cqhttp",
+        "coolq"
+      ],
       "is_official": false
     }
   ]
