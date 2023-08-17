@@ -17,8 +17,24 @@ env:
 
 jobs:
   react-to-new-issue:
-    name: Post a comment to new issues
+    name: New Issue
     if: github.event_name == 'issues' && github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    outputs:
+      comment-id: ${{ steps.comment.outputs.comment-id }}
+    steps:
+      - name: Add comment
+        id: comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            感谢你的提交.
+
+            自动验证将在几分钟内开始.
+  edited-old-issue:
+    name: Edited Issue
+    if: github.event_name == 'issues' && github.event.action == 'edited'
     runs-on: ubuntu-latest
     outputs:
       comment-id: ${{ steps.comment.outputs.comment-id }}
@@ -34,7 +50,7 @@ jobs:
             自动验证将在几分钟内开始.
   is-revalidation:
     if: github.event.issue.state == 'open' && github.event_name == 'issue_comment'
-    name: Verify if the comment is a revalidation request
+    name: Revalidation
     runs-on: ubuntu-latest
     steps:
       - name: Run /validate command
@@ -53,8 +69,7 @@ jobs:
           reactions: '+1'
   parse-issue:
     name: Parse Issue
-    needs: [react-to-new-issue,is-revalidation]
-    if: always()
+    needs: [react-to-new-issue,is-revalidation,edited-old-issue]
     runs-on: ubuntu-latest
     env:
       REPO: ${{ github.repository }}
@@ -327,7 +342,7 @@ jobs:
       - name: Define new branch name
         id: define_new_branch_name
         run: |
-          new_branch_name=$(echo "${ISSUE_NUM}-$(TZ=UTC-9 date '+%Y%m%d')")
+          new_branch_name=$(echo "${ISSUE_NUM}-$(TZ=UTC-9 date '+%Y%m%d-%H%M%S')")
           echo "::set-output name=new_branch_name::$new_branch_name"
 
       - name: Create branch
