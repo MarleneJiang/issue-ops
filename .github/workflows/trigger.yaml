@@ -50,4 +50,5 @@ jobs:
   validate:
     name: validation
     needs: [react-to-new-issue,is-revalidation]
+    if: always()
     uses: ./.github/workflows/validate.yaml
