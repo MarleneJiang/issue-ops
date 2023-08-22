@@ -62,7 +62,7 @@ def get_meta_info() -> None:
     if author is None:
         email = metadata.get_all("Author-email")
         if email is not None and "<" in email[0]: # PDM发包问题
-            author = email[0].split("<")[0].strip()
+            author = [email[0].split("<")[0].strip()]
         else:
             set_action_outputs({"result": "error", "output": "作者信息获取失败"})
             return
