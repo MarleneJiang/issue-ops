@@ -43,6 +43,23 @@
         "coolq"
       ],
       "is_official": false
+    },
+    {
+      "module_name": "alicebot_plugin_template",
+      "pypi_name": "alicebot-plugin-template",
+      "name": "alicebot-plugin-template",
+      "description": "AliceBot Plugin Template.",
+      "author": "st1020",
+      "license": "MIT",
+      "homepage": "",
+      "tags": [
+        "alicebot",
+        "bot",
+        "chatbot",
+        "tag1",
+        "tag2"
+      ],
+      "is_official": false
     }
   ]
 }
