@@ -125,6 +125,7 @@ jobs:
         env:
           TITLE: ${{ env.ISSUE_TITLE }}
           PYPI_NAME: ${{ steps.set-output.outputs.pypi_name }}
+          MODULE_NAME: ${{ steps.set-output.outputs.module_name }}
         run: python .github/actions_scripts/parse.py
 
   parse-failed:

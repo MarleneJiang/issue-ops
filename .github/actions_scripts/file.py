@@ -18,7 +18,6 @@ license_info = os.environ["LICENSE"]
 homepage = os.environ["HOMEPAGE"]
 tags = os.environ["TAGS"].replace("[", "").replace("]", "").replace("'", "").replace('"', "").split(",")
 
-
 def get_json() -> dict[str, Any]:
     """获取对应json文件并解析."""
     with Path(type_info + "s.json").open(encoding="utf-8") as f:

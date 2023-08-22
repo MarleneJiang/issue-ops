@@ -33,6 +33,21 @@ def check_pypi(name: str) -> bool:
 
     return False
 
+def check_module(module_name: str) -> bool:
+    """Check module name."""
+    import importlib
+    if module_name == "null":
+        return False
+    if "-" in module_name:
+        return False
+    try:
+        importlib.invalidate_caches()
+        module = importlib.import_module(module_name)
+        importlib.reload(module)
+    except Exception:  # noqa: BLE001
+        return False
+    else:
+        return True
 
 def parse_title(title: str) -> dict[str, Any]:
     """Prase Title."""
@@ -48,19 +63,23 @@ def main() -> None:
     """信息解析:1. 标题的type解析,如果不符合就报错 2. 提取name、module_name、pypi_name,如果不符合就报错 3. pypi_name在pip网站中检查,不存在则报错."""
     title = os.environ["TITLE"]
     pypi_name = os.environ["PYPI_NAME"]
+    module_name = os.environ["MODULE_NAME"]
     try:
-        parsed = parse_title(title)
+        if check_module(module_name) is False:
+            set_action_outputs({"result": "error", "output": "输入的module_name存在问题"})
+            return
         if check_pypi(pypi_name) is False:
             set_action_outputs({"result": "error", "output": "输入的pypi_name存在问题"})
-        else:
-            set_action_outputs(
-                {
-                    "result": "success",
-                    "output": "",
-                    "type": parsed.get("type", ""),
-                    "name": parsed.get("name", ""),
-                }
-            )
+            return
+        parsed = parse_title(title)
+        set_action_outputs(
+            {
+                "result": "success",
+                "output": "",
+                "type": parsed.get("type", ""),
+                "name": parsed.get("name", ""),
+            }
+        )
     except ValueError as e:
         set_action_outputs({"result": "error", "output": str(e)})
 

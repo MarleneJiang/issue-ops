@@ -2,10 +2,33 @@
 from __future__ import annotations
 
 import os
+import subprocess
 
 from utils import set_action_outputs
 
 pypi_name = os.environ["PYPI_NAME"]
+module_name = os.environ["MODULE_NAME"]
+
+
+
+def alicebot_test() -> None:
+    """验证插件是否能在 alicebot 中正常运行."""
+    try:
+
+        # 要执行的 Python 脚本路径
+        python_script_path = ".github/actions_scripts/plugin_test.py"
+        # 整个命令
+        command = f"pdm run {python_script_path} {module_name}"
+        result = subprocess.run(command, timeout=10, capture_output=True, text=True)  # noqa: S603
+        if result.returncode != 0:
+            msg = f"脚本执行失败: {result.stdout}"
+            raise ValueError(msg) from None
+    except subprocess.TimeoutExpired:
+        print("Script execution timed out!")# noqa: T201
+        raise
+    except subprocess.CalledProcessError as e:
+        msg = f"Script execution failed with error code {e.returncode}"
+        raise ValueError(msg) from e
 
 
 def get_meta_info() -> None:
@@ -54,4 +77,9 @@ def get_meta_info() -> None:
 
 
 if __name__ == "__main__":
-    get_meta_info()
+    try:
+        alicebot_test()
+    except Exception as e:  # noqa: BLE001
+        set_action_outputs({"result": "error", "output": str(e)})
+    else:
+        get_meta_info()
