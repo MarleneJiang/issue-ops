@@ -40,7 +40,7 @@ def alicebot_test() -> None:
         # 整个命令
         command = f"python {python_script_path} {module_name}"
         print(f"command: {command}")# noqa: T201
-        result = subprocess.run(command, timeout=10, capture_output=True, text=True)  # noqa: S603
+        result = subprocess.run(command, timeout=10, check=True, shell=True)  # noqa: S602
         print(f"result: {result}")# noqa: T201
         if result.returncode != 0:
             msg = f"脚本执行失败: {result.stdout}"
