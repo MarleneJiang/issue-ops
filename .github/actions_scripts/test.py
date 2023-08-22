@@ -37,8 +37,9 @@ def alicebot_test() -> None:
         if result.returncode != 0:
             msg = f"脚本执行失败: {result.stdout}"
             raise ValueError(msg) from None
-    except subprocess.TimeoutExpired:
-        raise
+    except subprocess.TimeoutExpired as e:
+        msg = f"脚本执行超时: {e.stdout}"
+        raise ValueError(msg) from e
     except subprocess.CalledProcessError as e:
         msg = f"Script execution failed with error code {e.returncode}"
         raise ValueError(msg) from e
@@ -59,7 +60,7 @@ def get_meta_info() -> None:
         return
     author = metadata.get_all("Author")
     if author is None:
-        email = metadata.get_all("author_email")
+        email = metadata.get_all("Author-email")
         if email is not None and "<" in email[0]: # PDM发包问题
             author = email[0].split("<")[0].strip()
         else:

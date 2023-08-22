@@ -193,6 +193,17 @@ jobs:
       result: ${{ steps.test.outputs.result }}
       output: ${{ steps.test.outputs.output }}
     steps:
+      - name: Remove label parse-issue/failed
+        if: contains(github.event.issue.labels.*.name, 'parse-issue/failed')
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.removeLabel({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: ["parse-issue/failed"]
+            })
       - uses: actions/checkout@v3
             # Set up Python 3.8 environment
       - name: Set up Python 3.8
