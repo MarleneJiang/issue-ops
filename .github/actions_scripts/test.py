@@ -38,12 +38,14 @@ def alicebot_test() -> None:
         print(f"result: {result}")# noqa: T201
         if result.returncode != 0:
             msg = f"脚本执行失败: {result.stdout}"
+            print(f"msg: {msg}")# noqa: T201
             raise ValueError(msg) from None
     except subprocess.TimeoutExpired:
         print("Script execution timed out!")# noqa: T201
         raise
     except subprocess.CalledProcessError as e:
         msg = f"Script execution failed with error code {e.returncode}"
+        print(f"msg: {msg}")# noqa: T201
         raise ValueError(msg) from e
 
 
