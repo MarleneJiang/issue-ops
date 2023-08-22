@@ -47,8 +47,8 @@ def check_module(module_name: str) -> bool:
         module = importlib.import_module(module_name)
         importlib.reload(module)
         print(f"module_name: {module_name}")# noqa: T201
-    except Exception:  # noqa: BLE001
-        print("module_name is invalid")# noqa: T201
+    except BaseException as e:  # noqa: BLE001
+        print(f"module_name is invalid ${e}")# noqa: T201
         return False
     else:
         print("module_name is valid")# noqa: T201
