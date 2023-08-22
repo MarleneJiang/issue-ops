@@ -36,7 +36,7 @@ def alicebot_test() -> None:
     try:
 
         # 要执行的 Python 脚本路径
-        python_script_path = "plugin_test.py"
+        python_script_path = ".github/actions_scripts/plugin_test.py"
         # 整个命令
         command = f"python {python_script_path} {module_name}"
         print(f"command: {command}")# noqa: T201
@@ -109,7 +109,7 @@ if __name__ == "__main__":
             alicebot_test()
         except Exception as e:  # noqa: BLE001
             print(f"Exception: {e}")# noqa: T201
-            set_action_outputs({"result": "error", "output": f"Exception: {e}"})
+            set_action_outputs({"result": "error", "output": "无法在alicebot中正常运行"})
         else:
             print("get_meta_info")# noqa: T201
             get_meta_info()
