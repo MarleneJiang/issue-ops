@@ -37,16 +37,21 @@ def check_module(module_name: str) -> bool:
     """Check module name."""
     import importlib
     if module_name == "null":
+        print("module_name is null")# noqa: T201
         return False
     if "-" in module_name:
+        print("module_name contains '-'")# noqa: T201
         return False
     try:
         importlib.invalidate_caches()
         module = importlib.import_module(module_name)
         importlib.reload(module)
+        print(f"module_name: {module_name}")# noqa: T201
     except Exception:  # noqa: BLE001
+        print("module_name is invalid")# noqa: T201
         return False
     else:
+        print("module_name is valid")# noqa: T201
         return True
 
 def parse_title(title: str) -> dict[str, Any]:
@@ -65,6 +70,7 @@ def main() -> None:
     pypi_name = os.environ["PYPI_NAME"]
     module_name = os.environ["MODULE_NAME"]
     try:
+        print(f"module_name: {module_name}")# noqa: T201
         if check_module(module_name) is False:
             set_action_outputs({"result": "error", "output": "输入的module_name存在问题"})
             return
