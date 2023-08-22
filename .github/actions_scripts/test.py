@@ -35,6 +35,7 @@ def alicebot_test() -> None:
         command = f"python {python_script_path} {module_name}"
         print(f"command: {command}")# noqa: T201
         result = subprocess.run(command, timeout=10, capture_output=True, text=True)  # noqa: S603
+        print(f"result: {result}")# noqa: T201
         if result.returncode != 0:
             msg = f"脚本执行失败: {result.stdout}"
             raise ValueError(msg) from None
@@ -99,6 +100,8 @@ if __name__ == "__main__":
             print("alicebot_test")# noqa: T201
             alicebot_test()
         except Exception as e:  # noqa: BLE001
+            print(f"Exception: {e}")# noqa: T201
             set_action_outputs({"result": "error", "output": str(e)})
         else:
+            print("get_meta_info")# noqa: T201
             get_meta_info()
