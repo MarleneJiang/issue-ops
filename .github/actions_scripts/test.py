@@ -3,17 +3,11 @@ from __future__ import annotations
 
 import os
 import subprocess
-from pathlib import Path
 
 from utils import set_action_outputs
 
 pypi_name = os.environ["PYPI_NAME"]
 module_name = os.environ["MODULE_NAME"]
-
-
-
-current_directory = Path(__file__).parent
-print("当前文件所在目录:", current_directory)  # noqa: T201
 
 def check_module(module_name: str) -> bool:
     """Check module name."""
@@ -39,19 +33,14 @@ def alicebot_test() -> None:
         python_script_path = ".github/actions_scripts/plugin_test.py"
         # 整个命令
         command = f"python {python_script_path} {module_name}"
-        print(f"command: {command}")# noqa: T201
         result = subprocess.run(command, timeout=10, check=True, shell=True)  # noqa: S602
-        print(f"result: {result}")# noqa: T201
         if result.returncode != 0:
             msg = f"脚本执行失败: {result.stdout}"
-            print(f"msg: {msg}")# noqa: T201
             raise ValueError(msg) from None
     except subprocess.TimeoutExpired:
-        print("Script execution timed out!")# noqa: T201
         raise
     except subprocess.CalledProcessError as e:
         msg = f"Script execution failed with error code {e.returncode}"
-        print(f"msg: {msg}")# noqa: T201
         raise ValueError(msg) from e
 
 
@@ -70,8 +59,12 @@ def get_meta_info() -> None:
         return
     author = metadata.get_all("Author")
     if author is None:
-        set_action_outputs({"result": "error", "output": "作者信息获取失败"})
-        return
+        email = metadata.get_all("author_email")
+        if email is not None and "<" in email[0]: # PDM发包问题
+            author = email[0].split("<")[0].strip()
+        else:
+            set_action_outputs({"result": "error", "output": "作者信息获取失败"})
+            return
     license_info = metadata.get_all("License")
     if license_info is None:
         license_info = [""]
@@ -105,11 +98,8 @@ if __name__ == "__main__":
         set_action_outputs({"result": "error", "output": "输入的module_name存在问题"})
     else:
         try:
-            print("alicebot_test")# noqa: T201
             alicebot_test()
-        except Exception as e:  # noqa: BLE001
-            print(f"Exception: {e}")# noqa: T201
+        except Exception:  # noqa: BLE001
             set_action_outputs({"result": "error", "output": "无法在alicebot中正常运行"})
         else:
-            print("get_meta_info")# noqa: T201
             get_meta_info()
