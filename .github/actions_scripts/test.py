@@ -9,7 +9,21 @@ from utils import set_action_outputs
 pypi_name = os.environ["PYPI_NAME"]
 module_name = os.environ["MODULE_NAME"]
 
-
+def check_module(module_name: str) -> bool:
+    """Check module name."""
+    import importlib
+    if module_name == "null":
+        return False
+    if "-" in module_name:
+        return False
+    try:
+        importlib.invalidate_caches()
+        module = importlib.import_module(module_name)
+        importlib.reload(module)
+    except BaseException:  # noqa: BLE001
+        return False
+    else:
+        return True
 
 def alicebot_test() -> None:
     """验证插件是否能在 alicebot 中正常运行."""
@@ -18,7 +32,8 @@ def alicebot_test() -> None:
         # 要执行的 Python 脚本路径
         python_script_path = ".github/actions_scripts/plugin_test.py"
         # 整个命令
-        command = f"pdm run {python_script_path} {module_name}"
+        command = f"python {python_script_path} {module_name}"
+        print(f"command: {command}")# noqa: T201
         result = subprocess.run(command, timeout=10, capture_output=True, text=True)  # noqa: S603
         if result.returncode != 0:
             msg = f"脚本执行失败: {result.stdout}"
@@ -77,9 +92,13 @@ def get_meta_info() -> None:
 
 
 if __name__ == "__main__":
-    try:
-        alicebot_test()
-    except Exception as e:  # noqa: BLE001
-        set_action_outputs({"result": "error", "output": str(e)})
+    if check_module(module_name) is False:
+        set_action_outputs({"result": "error", "output": "输入的module_name存在问题"})
     else:
-        get_meta_info()
+        try:
+            print("alicebot_test")# noqa: T201
+            alicebot_test()
+        except Exception as e:  # noqa: BLE001
+            set_action_outputs({"result": "error", "output": str(e)})
+        else:
+            get_meta_info()

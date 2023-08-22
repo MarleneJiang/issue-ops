@@ -33,26 +33,6 @@ def check_pypi(name: str) -> bool:
 
     return False
 
-def check_module(module_name: str) -> bool:
-    """Check module name."""
-    import importlib
-    if module_name == "null":
-        print("module_name is null")# noqa: T201
-        return False
-    if "-" in module_name:
-        print("module_name contains '-'")# noqa: T201
-        return False
-    try:
-        importlib.invalidate_caches()
-        module = importlib.import_module(module_name)
-        importlib.reload(module)
-        print(f"module_name: {module_name}")# noqa: T201
-    except BaseException as e:  # noqa: BLE001
-        print(f"module_name is invalid {e}")# noqa: T201
-        return False
-    else:
-        print("module_name is valid")# noqa: T201
-        return True
 
 def parse_title(title: str) -> dict[str, Any]:
     """Prase Title."""
@@ -68,12 +48,7 @@ def main() -> None:
     """信息解析:1. 标题的type解析,如果不符合就报错 2. 提取name、module_name、pypi_name,如果不符合就报错 3. pypi_name在pip网站中检查,不存在则报错."""
     title = os.environ["TITLE"]
     pypi_name = os.environ["PYPI_NAME"]
-    module_name = os.environ["MODULE_NAME"]
     try:
-        print(f"module_name: {module_name}")# noqa: T201
-        if check_module(module_name) is False:
-            set_action_outputs({"result": "error", "output": "输入的module_name存在问题"})
-            return
         if check_pypi(pypi_name) is False:
             set_action_outputs({"result": "error", "output": "输入的pypi_name存在问题"})
             return
