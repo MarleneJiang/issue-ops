@@ -9,7 +9,8 @@
 
 ## ✨ 版本示意图
 
-![image](https://github.com/MarleneJiang/issue-ops/assets/49270362/1d4e4e49-43cd-4d41-9ca2-5118da8ccd1d)
+![OSPP](https://github.com/MarleneJiang/issue-ops/assets/49270362/21610bcd-7322-43a1-ae09-2dda81d4f417)
+
 
 
 ## 🍜 参考文档
