@@ -8,6 +8,7 @@ from utils import set_action_outputs
 
 pypi_name = os.environ["PYPI_NAME"]
 module_name = os.environ["MODULE_NAME"]
+type = os.environ["TYPE"]
 
 def check_module(module_name: str) -> bool:
     """Check module name."""
@@ -32,7 +33,7 @@ def alicebot_test() -> None:
         # 要执行的 Python 脚本路径
         python_script_path = ".github/actions_scripts/plugin_test.py"
         # 整个命令
-        command = f"python {python_script_path} {module_name}"
+        command = f"python {python_script_path} {module_name} {type}"
         result = subprocess.run(command, timeout=10, check=True, shell=True)  # noqa: S602
         if result.returncode != 0:
             msg = f"脚本执行失败: {result.stdout}"

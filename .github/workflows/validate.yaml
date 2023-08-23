@@ -229,6 +229,7 @@ jobs:
         env:
           PYPI_NAME: ${{ needs.parse-issue.outputs.pypi_name }}
           MODULE_NAME: ${{ needs.parse-issue.outputs.module_name }}
+          TYPE: ${{ needs.parse-issue.outputs.type }}
         run: |
           pip install $PYPI_NAME
           python .github/actions_scripts/test.py

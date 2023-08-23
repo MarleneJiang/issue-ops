@@ -4,9 +4,12 @@ import sys
 from alicebot.bot import Bot
 
 PLUGIN_MODULE_NAME = sys.argv[1]
-
+TYPE = sys.argv[2]
 
 if PLUGIN_MODULE_NAME == "null":
+    sys.exit(1)
+
+if TYPE != "plugin":
     sys.exit(1)
 
 bot = Bot(config_file=None)
