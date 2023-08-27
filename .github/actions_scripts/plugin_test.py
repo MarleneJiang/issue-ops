@@ -3,13 +3,14 @@ import sys
 
 from alicebot.bot import Bot
 
-PLUGIN_MODULE_NAME = sys.argv[1]
+MODULE_NAME = sys.argv[1]
 TYPE = sys.argv[2]
-
-if PLUGIN_MODULE_NAME == "null":
+if MODULE_NAME == "null":
+    sys.stdout.write("Invalid MODULE_NAME value. Must be a valid Python module name.")
     sys.exit(1)
 
-if TYPE != "plugin":
+if TYPE not in {"plugin", "adapter", "bot"}:
+    sys.stdout.write("Invalid TYPE value. Must be one of 'plugin', 'adapter', or 'bot'.")
     sys.exit(1)
 
 bot = Bot(config_file=None)
@@ -21,17 +22,21 @@ def error_or_exception(self: Bot, message: str, exception: Exception) -> None:
     sys.stdout.write(message)
     sys.exit(1)
 
-
 Bot.error_or_exception = error_or_exception
 
-bot.load_plugins(PLUGIN_MODULE_NAME)
-
-
+if TYPE == "plugin":
+    bot.load_plugins(MODULE_NAME)
+if TYPE == "adapter":
+    bot.load_adapters(MODULE_NAME)
+if TYPE == "bot":
+    sys.exit(0)
 
 @bot.bot_run_hook
 async def bot_run_hook(bot: Bot) -> None:
     """在 Bot 启动后直接退出。."""
-    bot.should_exit.set()
+    if TYPE == "plugin":
+        bot.should_exit.set()
+    sys.exit(0)
 
 
 if __name__ == "__main__":

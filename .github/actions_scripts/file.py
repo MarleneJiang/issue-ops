@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from pathlib import Path
 from typing import Any
 
@@ -35,6 +36,7 @@ def add_info(json_data: list[dict[str, str]], infos: dict[str, Any]) -> bool:
             i["license"] = infos["license"]
             i["homepage"] = infos["homepage"]
             i["tags"] = infos["tags"]
+            i["time"] =  infos["time"]
             return True
     json_data.append(infos)
     return False
@@ -48,6 +50,15 @@ def save_json(json_data: dict[str, Any]) -> None:
 
 def main() -> None:
     """添加信息:1. 获取对应json文件并解析 2. 查询是否有同名插件,若存在则覆盖,并更新时间 3. 否则添加至最后一行,并附上更新时间 4. 保存至文件."""
+    # 获取当前UTC时间的时间戳
+    current_time_utc = time.time()
+    # 转换为东八区时间
+    current_time_east8 = current_time_utc + 8 * 3600
+    # 使用localtime得到结构化时间
+    struct_time = time.localtime(current_time_east8)
+    # 格式化时间
+    formatted_time = time.strftime("%Y-%m-%d %H:%M:%S", struct_time)
+
     json_data = get_json()
     data_list = json_data.get(type_info + "s", [])
     info = {
@@ -60,6 +71,7 @@ def main() -> None:
         "homepage": homepage,
         "tags": tags,
         "is_official": False,
+        "time":formatted_time
     }
     if add_info(data_list, info):
         set_action_outputs(
