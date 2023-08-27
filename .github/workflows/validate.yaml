@@ -100,33 +100,20 @@ jobs:
 
       # 启动py脚本环境，并传入module_name,pypi_name,ISSUE_TITLE
       - uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - uses: pdm-project/setup-pdm@v3
+        name: Setup PDM
         with:
-          python-version: '3.8'
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
-    
-      - name: Cache pip
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          python-version: 3.9
+          cache: true
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+        run: pdm install
       - name: Run Python script
         id: run
         env:
           TITLE: ${{ env.ISSUE_TITLE }}
           PYPI_NAME: ${{ steps.set-output.outputs.pypi_name }}
         run: |
-          python .github/actions_scripts/parse.py
+          pdm run .github/actions_scripts/parse.py
 
   parse-failed:
     name: Parse Failed
@@ -206,24 +193,13 @@ jobs:
             })
       - uses: actions/checkout@v3
             # Set up Python 3.8 environment
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
+      - uses: pdm-project/setup-pdm@v3
+        name: Setup PDM
         with:
-          python-version: "3.8"
-
-      # Set up cache for pip
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
-
-      - name: Cache pip
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          python-version: 3.9
+          cache: true
+      - name: Install dependencies
+        run: pdm install
       - name: alicebot test
         id: test
         env:
@@ -231,8 +207,8 @@ jobs:
           MODULE_NAME: ${{ needs.parse-issue.outputs.module_name }}
           TYPE: ${{ needs.parse-issue.outputs.type }}
         run: |
-          pip install $PYPI_NAME
-          python .github/actions_scripts/test.py
+          pdm add $PYPI_NAME
+          pdm run .github/actions_scripts/test.py
 
   validation-failed:
     name: Validation Failed
@@ -316,24 +292,13 @@ jobs:
           exit 1
 
       - uses: actions/checkout@v3
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
+      - uses: pdm-project/setup-pdm@v3
+        name: Setup PDM
         with:
-          python-version: "3.8"
-
-      # Set up cache for pip
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
-
-      - name: Cache pip
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          python-version: 3.9
+          cache: true
+      - name: Install dependencies
+        run: pdm install
       - name: Change file
         id: file
         env:
@@ -347,7 +312,7 @@ jobs:
           HOMEPAGE: ${{ needs.validate.outputs.homepage }}
           TAGS: ${{ needs.validate.outputs.tags }}
         run: |
-          python .github/actions_scripts/file.py
+          pdm .github/actions_scripts/file.py
 
       - name: Reopen issue
         if: ${{ github.event.issue.state }} == "closed"

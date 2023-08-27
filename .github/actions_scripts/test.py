@@ -9,28 +9,23 @@ from utils import set_action_outputs
 PYPI_NAME = os.environ["PYPI_NAME"]
 MODULE_NAME = os.environ["MODULE_NAME"]
 TYPE = os.environ["TYPE"]
-print("MODULE_NAME",MODULE_NAME)
+
 
 def check_module(module_name: str) -> bool:
     """Check module name."""
     import importlib
-    print("module_name",module_name)
+
     if module_name == "null":
-        print("null")
         return False
     if "-" in module_name:
-        print("-")
         return False
     try:
-        print("try")
         importlib.invalidate_caches()
         module = importlib.import_module(module_name)
         importlib.reload(module)
-    except BaseException as e:  # noqa: BLE001
-        print("except",e)
+    except BaseException:  # noqa: BLE001
         return False
     else:
-        print("else")
         return True
 
 
@@ -104,7 +99,6 @@ def get_meta_info() -> None:
 
 
 if __name__ == "__main__":
-    print("MODULE_NAME",MODULE_NAME)
     if check_module(MODULE_NAME) is False:
         set_action_outputs({"result": "error", "output": "输入的module_name存在问题"})
     else:
