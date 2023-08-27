@@ -26,8 +26,8 @@ def check_module(module_name: str) -> bool:
         importlib.invalidate_caches()
         module = importlib.import_module(module_name)
         importlib.reload(module)
-    except BaseException:  # noqa: BLE001
-        print("except")
+    except BaseException as e:  # noqa: BLE001
+        print("except",e)
         return False
     else:
         print("else")
