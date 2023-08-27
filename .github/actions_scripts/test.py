@@ -6,9 +6,9 @@ import subprocess
 
 from utils import set_action_outputs
 
-pypi_name = os.environ["PYPI_NAME"]
-module_name = os.environ["MODULE_NAME"]
-type = os.environ["TYPE"]
+PYPI_NAME = os.environ["PYPI_NAME"]
+MODULE_NAME = os.environ["MODULE_NAME"]
+TYPE = os.environ["TYPE"]
 
 def check_module(module_name: str) -> bool:
     """Check module name."""
@@ -33,8 +33,8 @@ def alicebot_test() -> None:
         # 要执行的 Python 脚本路径
         python_script_path = ".github/actions_scripts/plugin_test.py"
         # 整个命令
-        command = f"python {python_script_path} {module_name} {type}"
-        result = subprocess.run(command, timeout=10, check=True, shell=True)  # noqa: S602
+        command = f"python {python_script_path} {MODULE_NAME} {TYPE}"
+        result = subprocess.run(command, timeout=10, check=True, shell=True,capture_output=True)  # noqa: S602
         if result.returncode != 0:
             msg = f"脚本执行失败: {result.stdout}"
             raise ValueError(msg) from None
@@ -42,7 +42,7 @@ def alicebot_test() -> None:
         msg = f"脚本执行超时: {e.stdout}"
         raise ValueError(msg) from e
     except subprocess.CalledProcessError as e:
-        msg = f"Script execution failed with error code {e.returncode}"
+        msg = f"脚本执行错误: {e.stdout}"
         raise ValueError(msg) from e
 
 
@@ -50,7 +50,7 @@ def get_meta_info() -> None:
     """获取模块的元信息."""
     from importlib.metadata import metadata
 
-    metadata = metadata(pypi_name)
+    metadata = metadata(PYPI_NAME)
     name = metadata.get_all("Name")
     if name is None:
         set_action_outputs({"result": "error", "output": "模块名称获取失败"})
@@ -96,7 +96,7 @@ def get_meta_info() -> None:
 
 
 if __name__ == "__main__":
-    if check_module(module_name) is False:
+    if check_module(MODULE_NAME) is False:
         set_action_outputs({"result": "error", "output": "输入的module_name存在问题"})
     else:
         try:
