@@ -17,7 +17,15 @@ description = os.environ["DESCRIPTION"]
 author = os.environ["AUTHOR"]
 license_info = os.environ["LICENSE"]
 homepage = os.environ["HOMEPAGE"]
-tags = os.environ["TAGS"].replace("[", "").replace("]", "").replace("'", "").replace('"', "").split(",")
+tags = (
+    os.environ["TAGS"]
+    .replace("[", "")
+    .replace("]", "")
+    .replace("'", "")
+    .replace('"', "")
+    .split(",")
+)
+
 
 def get_json() -> dict[str, Any]:
     """获取对应json文件并解析."""
@@ -36,7 +44,7 @@ def add_info(json_data: list[dict[str, str]], infos: dict[str, Any]) -> bool:
             i["license"] = infos["license"]
             i["homepage"] = infos["homepage"]
             i["tags"] = infos["tags"]
-            i["time"] =  infos["time"]
+            i["time"] = infos["time"]
             return True
     json_data.append(infos)
     return False
@@ -71,7 +79,7 @@ def main() -> None:
         "homepage": homepage,
         "tags": tags,
         "is_official": False,
-        "time":formatted_time
+        "time": formatted_time,
     }
     if add_info(data_list, info):
         set_action_outputs(

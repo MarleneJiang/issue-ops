@@ -10,9 +10,11 @@ PYPI_NAME = os.environ["PYPI_NAME"]
 MODULE_NAME = os.environ["MODULE_NAME"]
 TYPE = os.environ["TYPE"]
 
+
 def check_module(module_name: str) -> bool:
     """Check module name."""
     import importlib
+
     if module_name == "null":
         return False
     if "-" in module_name:
@@ -26,15 +28,17 @@ def check_module(module_name: str) -> bool:
     else:
         return True
 
+
 def alicebot_test() -> None:
     """验证插件是否能在 alicebot 中正常运行."""
     try:
-
         # 要执行的 Python 脚本路径
         python_script_path = ".github/actions_scripts/plugin_test.py"
         # 整个命令
         command = f"python {python_script_path} {MODULE_NAME} {TYPE}"
-        result = subprocess.run(command, timeout=10, check=True, shell=True,capture_output=True)  # noqa: S602
+        result = subprocess.run(
+            command, timeout=10, check=True, shell=True, capture_output=True
+        )  # noqa: S602
         if result.returncode != 0:
             msg = f"脚本执行失败: {result.stdout}"
             raise ValueError(msg) from None
@@ -62,7 +66,7 @@ def get_meta_info() -> None:
     author = metadata.get_all("Author")
     if author is None:
         email = metadata.get_all("Author-email")
-        if email is not None and "<" in email[0]: # PDM发包问题
+        if email is not None and "<" in email[0]:  # PDM发包问题
             author = [email[0].split("<")[0].strip()]
         else:
             set_action_outputs({"result": "error", "output": "作者信息获取失败"})
