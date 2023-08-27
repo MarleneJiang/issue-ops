@@ -8,8 +8,29 @@
       "author": "作者名",
       "license": "Apache",
       "homepage": "http://github.com/adapter",
-      "tags": ["adapter"],
+      "tags": [
+        "adapter"
+      ],
       "is_official": true
+    },
+    {
+      "module_name": "alicebot.adapter.cqhttp",
+      "pypi_name": "alicebot-adapter-cqhttp",
+      "name": "alicebot-adapter-cqhttp",
+      "description": "OneBot(CQHTTP) adapter for AliceBot.",
+      "author": "st1020",
+      "license": "MIT",
+      "homepage": "",
+      "tags": [
+        "bot",
+        "chatbot",
+        "coolq",
+        "cqhttp",
+        "qq",
+        "qqbot"
+      ],
+      "is_official": false,
+      "time": "2023-08-28 02:38:18"
     }
   ]
 }
