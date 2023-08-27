@@ -312,7 +312,7 @@ jobs:
           HOMEPAGE: ${{ needs.validate.outputs.homepage }}
           TAGS: ${{ needs.validate.outputs.tags }}
         run: |
-          pdm .github/actions_scripts/file.py
+          pdm run .github/actions_scripts/file.py
 
       - name: Reopen issue
         if: ${{ github.event.issue.state }} == "closed"
