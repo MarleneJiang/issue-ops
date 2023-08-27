@@ -9,23 +9,28 @@ from utils import set_action_outputs
 PYPI_NAME = os.environ["PYPI_NAME"]
 MODULE_NAME = os.environ["MODULE_NAME"]
 TYPE = os.environ["TYPE"]
-
+print("MODULE_NAME",MODULE_NAME)
 
 def check_module(module_name: str) -> bool:
     """Check module name."""
     import importlib
-
+    print("module_name",module_name)
     if module_name == "null":
+        print("null")
         return False
     if "-" in module_name:
+        print("-")
         return False
     try:
+        print("try")
         importlib.invalidate_caches()
         module = importlib.import_module(module_name)
         importlib.reload(module)
     except BaseException:  # noqa: BLE001
+        print("except")
         return False
     else:
+        print("else")
         return True
 
 
@@ -37,8 +42,7 @@ def alicebot_test() -> None:
         # 整个命令
         command = f"python {python_script_path} {MODULE_NAME} {TYPE}"
         result = subprocess.run(
-            command, timeout=10, check=True, shell=True, capture_output=True
-        )  # noqa: S602
+            command, timeout=10, check=True, shell=True, capture_output=True)  # noqa: S602
         if result.returncode != 0:
             msg = f"脚本执行失败: {result.stdout}"
             raise ValueError(msg) from None
@@ -100,6 +104,7 @@ def get_meta_info() -> None:
 
 
 if __name__ == "__main__":
+    print("MODULE_NAME",MODULE_NAME)
     if check_module(MODULE_NAME) is False:
         set_action_outputs({"result": "error", "output": "输入的module_name存在问题"})
     else:
