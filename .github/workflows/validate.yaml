@@ -200,6 +200,10 @@ jobs:
           cache: true
       - name: Install dependencies
         run: pdm install
+      # 若type不为bot，则安装pypi_name
+      - name: Install pypi_name
+        if: needs.parse-issue.outputs.type != 'bot'
+        run: pdm add ${{ needs.parse-issue.outputs.pypi_name }}
       - name: alicebot test
         id: test
         env:
@@ -207,7 +211,6 @@ jobs:
           MODULE_NAME: ${{ needs.parse-issue.outputs.module_name }}
           TYPE: ${{ needs.parse-issue.outputs.type }}
         run: |
-          pdm add $PYPI_NAME
           pdm run .github/actions_scripts/test.py
 
   validation-failed:

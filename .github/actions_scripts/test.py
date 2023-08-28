@@ -99,11 +99,12 @@ def get_meta_info() -> None:
 
 
 if __name__ == "__main__":
-    if check_module(MODULE_NAME) is False:
+    if TYPE!="bot" and (check_module(MODULE_NAME) is False):
         set_action_outputs({"result": "error", "output": "输入的module_name存在问题"})
     else:
         try:
-            alicebot_test()
+            if TYPE!="bot":
+                alicebot_test()
         except Exception:  # noqa: BLE001
             set_action_outputs({"result": "error", "output": "无法在alicebot中正常运行"})
         else:
