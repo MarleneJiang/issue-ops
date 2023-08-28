@@ -1,28 +1,6 @@
 {
   "bots": [
     {
-      "name": "机器人1",
-      "description": "这是一个机器人示例。",
-      "author": "作者名",
-      "license": "GPL",
-      "homepage": "http://github.com/bot1",
-      "tags": [
-        "bot",
-        "example"
-      ],
-      "is_official": true
-    },
-    {
-      "name": "机器人2",
-      "description": "这是另一个机器人示例。",
-      "author": "作者名",
-      "tags": [
-        "bot",
-        "test"
-      ],
-      "is_official": false
-    },
-    {
       "module_name": "iamai",
       "pypi_name": "iamai",
       "name": "iamai",
