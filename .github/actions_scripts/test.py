@@ -62,11 +62,11 @@ def get_meta_info() -> None:
 
 
 if __name__ == "__main__":
-    if TYPE!="bot" and (check_module(MODULE_NAME) is False):
+    if TYPE != "bot" and (check_module(MODULE_NAME) is False):
         set_action_outputs({"result": "error", "output": "输入的module_name存在问题"})
     else:
         try:
-            if TYPE!="bot":
+            if TYPE != "bot":
                 alicebot_test()
         except ValueError as e:
             set_action_outputs({"result": "error", "output": str(e)})

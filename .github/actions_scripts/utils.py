@@ -18,7 +18,8 @@ def set_action_outputs(output_pairs: dict[str, str]) -> None:
         for key, value in output_pairs.items():
             print(f"::set-output name={key}::{value}")  # noqa: T201
 
-class Pypi :
+
+class Pypi:
     """获取pypi info."""
 
     BASE_URL = "https://pypi.org/pypi"
@@ -29,7 +30,8 @@ class Pypi :
         """Init."""
         self.name = name
         self.data = self.get_response(name).get("info", {})
-    def get_response(self,name: str) -> dict[str, Any]:
+
+    def get_response(self, name: str) -> dict[str, Any]:
         """Request response from PyPi API."""
         target_url = f"{self.BASE_URL}/{name}/json"
         response = requests.get(target_url, timeout=5)
@@ -37,13 +39,15 @@ class Pypi :
             msg = "pypi_name检查出错"
             raise ValueError(msg)
         return response.json()
-    def get(self,key:str) -> str | None:
+
+    def get(self, key: str) -> str | None:
         """."""
         if self.data == {}:
             msg = "module pypi info为空"
             raise ValueError(msg)
         return self.data.get(key, None)
-    def check_pypi(self,name: str) -> bool:
+
+    def check_pypi(self, name: str) -> bool:
         """Check module filename for conflict."""
         if name == "null":
             return False
@@ -53,7 +57,7 @@ class Pypi :
             return name.lower() == module_name.lower()
         return False
 
-    def get_info(self)->dict[str,str]:
+    def get_info(self) -> dict[str, str]:
         """."""
         name = self.get("name")
         if (name is None) or (name == ""):
@@ -82,10 +86,10 @@ class Pypi :
             msg = "标签信息获取失败"
             raise ValueError(msg)
         return {
-                "name": name,
-                "description": description,
-                "author": author,
-                "license": license_info,
-                "homepage": homepage,
-                "tags": tags,
-            }
+            "name": name,
+            "description": description,
+            "author": author,
+            "license": license_info,
+            "homepage": homepage,
+            "tags": tags,
+        }

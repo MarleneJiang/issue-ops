@@ -17,9 +17,11 @@ def parse_title(title: str) -> dict[str, Any]:
     msg = "标题格式错误"
     raise ValueError(msg)
 
+
 def raise_value_error(msg: str) -> None:
     """Raise ValueError."""
     raise ValueError(msg)
+
 
 def main() -> None:
     """信息解析:1. 标题的type解析,如果不符合就报错 2. 提取name、module_name、pypi_name,如果不符合就报错 3. pypi_name在pip网站中检查,不存在则报错."""
