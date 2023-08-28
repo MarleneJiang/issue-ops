@@ -4,7 +4,7 @@ from __future__ import annotations
 import os
 import subprocess
 
-from utils import set_action_outputs
+from utils import Pypi, set_action_outputs
 
 PYPI_NAME = os.environ["PYPI_NAME"]
 MODULE_NAME = os.environ["MODULE_NAME"]
@@ -51,51 +51,14 @@ def alicebot_test() -> None:
 
 def get_meta_info() -> None:
     """获取模块的元信息."""
-    from importlib.metadata import metadata
-
-    metadata = metadata(PYPI_NAME)
-    name = metadata.get_all("Name")
-    if name is None:
-        set_action_outputs({"result": "error", "output": "模块名称获取失败"})
-        return
-    description = metadata.get_all("Summary")
-    if description is None:
-        set_action_outputs({"result": "error", "output": "模块描述获取失败"})
-        return
-    author = metadata.get_all("Author")
-    if author is None:
-        email = metadata.get_all("Author-email")
-        if email is not None and "<" in email[0]:  # PDM发包问题
-            author = [email[0].split("<")[0].strip()]
-        else:
-            set_action_outputs({"result": "error", "output": "作者信息获取失败"})
-            return
-    license_info = metadata.get_all("License")
-    if license_info is None:
-        license_info = [""]
-    homepage = metadata.get_all("Home-page")
-    if homepage is None:
-        homepage = [""]
-    tags = metadata.get_all("Keywords")
-    if tags is None:
-        set_action_outputs({"result": "error", "output": "标签信息获取失败"})
-        return
-    tags = metadata.get_all("Keywords")
-    if tags is None:
-        set_action_outputs({"result": "error", "output": "标签信息获取失败"})
-        return
-    set_action_outputs(
-        {
-            "result": "success",
-            "output": "模块元信息获取成功",
-            "name": name[0],
-            "description": description[0],
-            "author": author[0],
-            "license": license_info[0],
-            "homepage": homepage[0],
-            "tags": str(tags),
-        }
-    )
+    try:
+        pypi = Pypi(PYPI_NAME)
+        data = pypi.get_info()
+        data["result"] = "success"
+        data["output"] = "获取module元信息成功"
+        set_action_outputs(data)
+    except ValueError as e:
+        set_action_outputs({"result": "error", "output": str(e)})
 
 
 if __name__ == "__main__":
@@ -105,7 +68,7 @@ if __name__ == "__main__":
         try:
             if TYPE!="bot":
                 alicebot_test()
-        except Exception:  # noqa: BLE001
-            set_action_outputs({"result": "error", "output": "无法在alicebot中正常运行"})
+        except ValueError as e:
+            set_action_outputs({"result": "error", "output": str(e)})
         else:
             get_meta_info()

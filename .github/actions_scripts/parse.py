@@ -5,33 +5,7 @@ import os
 import re
 from typing import Any
 
-import requests
-from utils import set_action_outputs
-
-BASE_URL = "https://pypi.org/pypi"
-CODE = 404
-
-
-def get_response(name: str) -> dict[str, Any] | None:
-    """Request response from PyPi API."""
-    target_url = f"{BASE_URL}/{name}/json"
-    response = requests.get(target_url, timeout=5)
-    if response.status_code == CODE:
-        return None
-    return response.json()
-
-
-def check_pypi(name: str) -> bool:
-    """Check module filename for conflict."""
-    if name == "null":
-        return False
-    response = get_response(name)
-
-    if response:
-        module_name = response.get("info", {}).get("package_url", "").split("/")[-2]
-        return name.lower() == module_name.lower()
-
-    return False
+from utils import Pypi, set_action_outputs
 
 
 def parse_title(title: str) -> dict[str, Any]:
@@ -43,15 +17,19 @@ def parse_title(title: str) -> dict[str, Any]:
     msg = "标题格式错误"
     raise ValueError(msg)
 
+def raise_value_error(msg: str) -> None:
+    """Raise ValueError."""
+    raise ValueError(msg)
 
 def main() -> None:
     """信息解析:1. 标题的type解析,如果不符合就报错 2. 提取name、module_name、pypi_name,如果不符合就报错 3. pypi_name在pip网站中检查,不存在则报错."""
     title = os.environ["TITLE"]
     pypi_name = os.environ["PYPI_NAME"]
     try:
-        if check_pypi(pypi_name) is False:
-            set_action_outputs({"result": "error", "output": "输入的pypi_name存在问题"})
-            return
+        pypi = Pypi(pypi_name)
+        if pypi.check_pypi(pypi_name) is False:
+            msg = "输入的pypi_name存在问题"
+            raise_value_error(msg)
         parsed = parse_title(title)
         set_action_outputs(
             {
