@@ -6,15 +6,46 @@
       "author": "作者名",
       "license": "GPL",
       "homepage": "http://github.com/bot1",
-      "tags": ["bot", "example"],
+      "tags": [
+        "bot",
+        "example"
+      ],
       "is_official": true
     },
     {
       "name": "机器人2",
       "description": "这是另一个机器人示例。",
       "author": "作者名",
-      "tags": ["bot", "test"],
+      "tags": [
+        "bot",
+        "test"
+      ],
       "is_official": false
+    },
+    {
+      "module_name": "iamai",
+      "pypi_name": "iamai",
+      "name": "iamai",
+      "description": "bot framework.",
+      "author": "简律纯",
+      "license": "MIT",
+      "homepage": "https://retrofor.space/",
+      "tags": [
+        "bot",
+        "qq",
+        "qqbot",
+        "mirai",
+        "coolq",
+        "kook",
+        "go-cqhttp",
+        "dingtalk",
+        "console",
+        "apscheduler",
+        "bilibili",
+        "bilibili-live"
+      ],
+      "is_official": false,
+      "time": "2023-08-28 18:57:34"
     }
   ]
 }
