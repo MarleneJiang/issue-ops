@@ -214,6 +214,7 @@ jobs:
           echo "output=安装pypi包失败,请检查是否存在依赖冲突或者其他情况" >> $GITHUB_OUTPUT
       - name: alicebot test
         id: test
+        if: steps.install-pypi.outcome == 'success' && steps.install-pypi.conclusion == 'success'
         env:
           PYPI_NAME: ${{ needs.parse-issue.outputs.pypi_name }}
           MODULE_NAME: ${{ needs.parse-issue.outputs.module_name }}
