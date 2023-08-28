@@ -9,11 +9,11 @@ body:
   - type: input
     attributes:
       label: module-name
-      description: 导入时的模块名称，类型为bot时不填
+      description: 导入时的模块名称
   - type: input
     attributes:
       label: pypi-name
-      description: 导入时的模块名称，类型为bot时不填
+      description: 导入时的模块名称
   - type: markdown
     attributes:
       value: |
