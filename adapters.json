@@ -18,7 +18,7 @@
       "pypi_name": "alicebot-adapter-cqhttp",
       "name": "alicebot-adapter-cqhttp",
       "description": "OneBot(CQHTTP) adapter for AliceBot.",
-      "author": "st1020",
+      "author": "",
       "license": "MIT",
       "homepage": "",
       "tags": [
@@ -30,7 +30,7 @@
         "qqbot"
       ],
       "is_official": false,
-      "time": "2023-08-28 02:38:18"
+      "time": "2023-08-28 19:33:36"
     }
   ]
 }
