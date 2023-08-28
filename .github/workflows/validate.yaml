@@ -177,8 +177,8 @@ jobs:
       license: ${{ steps.test.outputs.license }}
       homepage: ${{ steps.test.outputs.homepage }}
       tags: ${{ steps.test.outputs.tags }}
-      result: ${{ steps.test.outputs.result }}
-      output: ${{ steps.test.outputs.output }}
+      result: ${{ steps.test.outputs.result || steps.install-pypi-error.outputs.result }} 
+      output: ${{ steps.test.outputs.output || steps.install-pypi-error.outputs.output }}
     steps:
       - name: Remove label parse-issue/failed
         if: contains(github.event.issue.labels.*.name, 'parse-issue/failed')
@@ -202,8 +202,16 @@ jobs:
         run: pdm install
       # 若type不为bot，则安装pypi_name
       - name: Install pypi_name
+        id: install-pypi
         if: needs.parse-issue.outputs.type != 'bot'
+        continue-on-error: true
         run: pdm add ${{ needs.parse-issue.outputs.pypi_name }}
+      - name: Install Error
+        id: install-pypi-error
+        if: steps.install-pypi.outcome != 'success' || steps.install-pypi.conclusion != 'success'
+        run: | # 输出错误信息
+          echo "result=error" >> $GITHUB_OUTPUT
+          echo "output=安装pypi包失败,请检查是否存在依赖冲突或者其他情况" >> $GITHUB_OUTPUT
       - name: alicebot test
         id: test
         env:
