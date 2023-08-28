@@ -66,8 +66,8 @@ class Pypi :
         author = self.get("author")
         if author is None:
             email = self.get("author_email")
-            if email is not None and "<" in email[0]:  # PDM发包问题
-                author = email[0].split("<")[0].strip()
+            if email is not None and "<" in email:  # PDM发包问题
+                author = email.split("<")[0].strip()
             else:
                 msg = "作者信息获取失败"
                 raise ValueError(msg)
