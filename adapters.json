@@ -36,6 +36,24 @@
       ],
       "is_official": false,
       "time": "2023-08-28 19:50:19"
+    },
+    {
+      "module_name": "alicebot.adapter.onebot",
+      "pypi_name": "alicebot-adapter-onebot",
+      "name": "alicebot-adapter-onebot",
+      "description": "OneBot v12 adapter for AliceBot.",
+      "author": "st1020",
+      "license": "MIT",
+      "homepage": "",
+      "tags": [
+        "bot",
+        "chatbot",
+        "cqhttp",
+        "ontbot",
+        "qq"
+      ],
+      "is_official": false,
+      "time": "2023-08-28 19:54:58"
     }
   ]
 }
