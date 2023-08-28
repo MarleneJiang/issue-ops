@@ -18,6 +18,24 @@
       ],
       "is_official": false,
       "time": "2023-08-28 19:44:51"
+    },
+    {
+      "module_name": "alicebot.adapter.mirai",
+      "pypi_name": "alicebot-adapter-mirai",
+      "name": "alicebot-adapter-mirai",
+      "description": "Mirai adapter for AliceBot.",
+      "author": "st1020",
+      "license": "AGPL-3.0-or-later",
+      "homepage": "",
+      "tags": [
+        "bot",
+        "chatbot",
+        "mirai",
+        "qq",
+        "qqbot"
+      ],
+      "is_official": false,
+      "time": "2023-08-28 19:50:19"
     }
   ]
 }
