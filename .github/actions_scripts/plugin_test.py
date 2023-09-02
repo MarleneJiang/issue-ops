@@ -1,4 +1,4 @@
-"""."""
+"""用于测试插件的脚本。"""
 import sys
 
 from alicebot.bot import Bot
@@ -39,7 +39,7 @@ if TYPE == "bot":
 
 @bot.bot_run_hook
 async def bot_run_hook(bot: Bot) -> None:
-    """在 Bot 启动后直接退出。."""
+    """在 Bot 启动后直接退出。"""
     if TYPE == "plugin":
         bot.should_exit.set()
     sys.exit(0)
